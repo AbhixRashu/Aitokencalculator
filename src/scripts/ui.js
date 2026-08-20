@@ -693,7 +693,12 @@ function init() {
   $('#currency-select').value = state.currency;
   window.__cur = CURRENCIES[state.currency].symbol;
 
-  $('#footer-updated').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  const lastUpdated = allModels()
+    .map(m => m.updated)
+    .filter(Boolean)
+    .sort()
+    .pop() || new Date().toISOString().slice(0, 10);
+  $('#footer-updated').textContent = new Date(lastUpdated + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   const navU = $('#nav-updated');
   if (navU) navU.textContent = 'PRICES VERIFIED ' + $('#footer-updated').textContent.toUpperCase();
 
