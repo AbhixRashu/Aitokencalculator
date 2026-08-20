@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#d97757"/>
+  <g transform="translate(32 32)" fill="#fff">
+    <path d="M0 -30 L4 -20 L-4 -20 Z"/>
+    <path d="M21 -21 L15 -15 L19 -11 Z"/>
+    <path d="M30 0 L20 4 L20 -4 Z"/>
+    <path d="M21 21 L11 19 L15 15 Z"/>
+    <path d="M0 30 L-4 20 L4 20 Z"/>
+    <path d="M-21 21 L-15 15 L-19 11 Z"/>
+    <path d="M-30 0 L-20 -4 L-20 4 Z"/>
+    <path d="M-21 -21 L-11 -19 L-15 -15 Z"/>
+  </g>
+  <circle cx="32" cy="32" r="7" fill="#fff"/>
+</svg>

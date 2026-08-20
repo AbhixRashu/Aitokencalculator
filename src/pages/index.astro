@@ -1,0 +1,305 @@
+---
+import '../styles/style.css';
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TokenCalc — estimate AI token cost in seconds. OpenAI, Claude, Gemini, Mistral and Llama." />
+  <title>TokenCalc — AI Token &amp; Cost Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- ======================= NAV ======================= -->
+  <header class="nav">
+    <a class="brand" href="/" aria-label="TokenCalc home">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="16" height="16" rx="4"></rect>
+          <circle cx="9" cy="9" r="1.4"></circle>
+          <circle cx="15" cy="9" r="1.4"></circle>
+          <circle cx="9" cy="15" r="1.4"></circle>
+          <circle cx="15" cy="15" r="1.4"></circle>
+        </svg>
+      </span>
+      <span class="brand-name">TokenCalc</span>
+    </a>
+    <div class="nav-right">
+      <span class="nav-mono" id="nav-updated"></span>
+      <label class="nav-select" for="currency-select">
+        <span class="sr-only">Currency</span>
+        <select id="currency-select" title="Display currency">
+          <option value="USD">$ USD</option>
+          <option value="EUR">€ EUR</option>
+          <option value="GBP">£ GBP</option>
+          <option value="JPY">¥ JPY</option>
+          <option value="CNY">¥ CNY</option>
+          <option value="KRW">₩ KRW</option>
+          <option value="INR">₹ INR</option>
+        </select>
+      </label>
+      <button id="theme-toggle" class="icon-btn" title="Toggle dark / light mode" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ======================= HERO ======================= -->
+  <section class="hero">
+    <div class="hero-mesh" aria-hidden="true">
+      <svg viewBox="0 0 1440 480" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+        <defs>
+          <filter id="mesh-blur" x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur stdDeviation="110" />
+          </filter>
+          <linearGradient id="mesh-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="1" />
+          </linearGradient>
+        </defs>
+        <g filter="url(#mesh-blur)">
+          <ellipse cx="230" cy="150" rx="420" ry="280" fill="#007cf0" opacity="0.32" />
+          <ellipse cx="470" cy="110" rx="360" ry="240" fill="#00dfd8" opacity="0.30" />
+          <ellipse cx="760" cy="170" rx="380" ry="260" fill="#7928ca" opacity="0.26" />
+          <ellipse cx="1030" cy="120" rx="360" ry="250" fill="#ff0080" opacity="0.24" />
+          <ellipse cx="1280" cy="190" rx="380" ry="260" fill="#ff4d4d" opacity="0.22" />
+          <ellipse cx="1350" cy="120" rx="300" ry="220" fill="#f9cb28" opacity="0.20" />
+        </g>
+        <rect x="0" y="0" width="1440" height="480" fill="url(#mesh-fade)" />
+      </svg>
+    </div>
+
+    <div class="hero-inner">
+      <span class="eyebrow">AI · Token · Cost Estimator</span>
+      <h1 class="display-xl">How much does your prompt really cost?</h1>
+      <p class="lead">Pick a model, describe your workload, and get one honest number — input, output, reasoning and caching included.</p>
+
+      <div class="hero-model-row">
+        <label class="hero-field">
+          <span class="mono-label">Model</span>
+          <select id="model-select" class="form-lg" aria-label="Choose model"></select>
+        </label>
+        <div class="badge" id="model-price-hint" aria-live="polite">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= SUPPORTED PROVIDERS ======================= -->
+  <section class="logos" aria-label="Supported providers">
+    <div class="logos-inner">
+      <div class="logos-head">
+        <span class="eyebrow">Supported providers</span>
+        <h2>51 models, nine leading families.</h2>
+        <p>TokenCount estimates tokens and cost across the models teams actually ship with.</p>
+      </div>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <!-- set A -->
+          <div class="logo-tile"><img src="/assets/icons/openai.svg" alt="" /><div><div class="lt-name">OpenAI</div><div class="lt-count">14 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/anthropic.svg" alt="" /><div><div class="lt-name">Anthropic</div><div class="lt-count">9 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/google.svg" alt="" /><div><div class="lt-name">Google</div><div class="lt-count">9 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/mistral.svg" alt="" /><div><div class="lt-name">Mistral</div><div class="lt-count">5 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/meta.svg" alt="" /><div><div class="lt-name">Meta / Llama</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/grok.svg" alt="" /><div><div class="lt-name">xAI / Grok</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/minimax.svg" alt="" /><div><div class="lt-name">MiniMax</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/kimi.svg" alt="" /><div><div class="lt-name">Moonshot / Kimi</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/deepseek.svg" alt="" /><div><div class="lt-name">DeepSeek</div><div class="lt-count">2 models</div></div></div>
+          <!-- set B (seamless loop) -->
+          <div class="logo-tile"><img src="/assets/icons/openai.svg" alt="" /><div><div class="lt-name">OpenAI</div><div class="lt-count">14 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/anthropic.svg" alt="" /><div><div class="lt-name">Anthropic</div><div class="lt-count">9 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/google.svg" alt="" /><div><div class="lt-name">Google</div><div class="lt-count">9 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/mistral.svg" alt="" /><div><div class="lt-name">Mistral</div><div class="lt-count">5 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/meta.svg" alt="" /><div><div class="lt-name">Meta / Llama</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/grok.svg" alt="" /><div><div class="lt-name">xAI / Grok</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/minimax.svg" alt="" /><div><div class="lt-name">MiniMax</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/kimi.svg" alt="" /><div><div class="lt-name">Moonshot / Kimi</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/deepseek.svg" alt="" /><div><div class="lt-name">DeepSeek</div><div class="lt-count">2 models</div></div></div>
+        </div>
+      </div>
+
+      <span class="logos-foot">OPENAI · CLAUDE · GEMINI · MISTRAL · LLAMA · GROK · MINIMAX · KIMI · DEEPSEEK — ESTIMATES, NOT BILLING</span>
+    </div>
+  </section>
+
+  <!-- ======================= CALCULATOR ======================= -->
+  <main class="calc">
+    <div class="calc-grid">
+      <!-- INPUTS -->
+      <section class="card flush">
+        <div style="padding:24px">
+          <div class="seg" role="tablist" aria-label="Calculator modes">
+            <button class="seg-btn active" role="tab" aria-selected="true" data-tab="text">Text</button>
+            <button class="seg-btn" role="tab" aria-selected="false" data-tab="manual">Manual</button>
+            <button class="seg-btn" role="tab" aria-selected="false" data-tab="multiturn">Chat</button>
+            <button class="seg-btn" role="tab" aria-selected="false" data-tab="multimodal">Media</button>
+            <button class="seg-btn" role="tab" aria-selected="false" data-tab="compare">Compare</button>
+            <button class="seg-btn" role="tab" aria-selected="false" data-tab="ranking">Ranking</button>
+          </div>
+
+          <!-- ============ TEXT ============ -->
+          <div class="tab-pane active" id="tab-pane-text" role="tabpanel">
+            <textarea id="text-input" class="mono" rows="9"
+              placeholder="Paste or type text here… Token count is estimated from character density (English ≈ 4 chars/token)."></textarea>
+            <div class="row">
+              <label class="field grow">
+                <span>Output tokens <small>(the reply)</small></span>
+                <input type="number" id="text-output-tokens" min="0" value="200" />
+              </label>
+              <label class="btn-pill secondary sm" style="align-self:flex-end">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+                Upload file
+                <input type="file" id="file-upload" accept=".txt,.csv,.md,.pdf,text/plain,text/csv" hidden />
+              </label>
+              <button class="btn-pill primary sm" id="sample-btn" style="align-self:flex-end">Try sample</button>
+              <span class="mono" id="token-estimate" style="align-self:flex-end;font-size:.72rem;color:var(--mute)" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <!-- ============ MANUAL ============ -->
+          <div class="tab-pane" id="tab-pane-manual" role="tabpanel">
+            <div class="row" style="margin-top:0">
+              <label class="field">
+                <span>Input tokens</span>
+                <input type="number" id="manual-input-tokens" min="0" value="5000" />
+              </label>
+              <label class="field">
+                <span>Output tokens</span>
+                <input type="number" id="manual-output-tokens" min="0" value="1000" />
+              </label>
+            </div>
+          </div>
+
+          <!-- ============ CHAT ============ -->
+          <div class="tab-pane" id="tab-pane-multiturn" role="tabpanel">
+            <div class="row" style="margin-top:0">
+              <label class="field grow">
+                <span>Turns <output id="mt-turns-val" for="mt-turns" style="color:var(--link)">10</output></span>
+                <input type="range" id="mt-turns" min="1" max="40" value="10" />
+              </label>
+              <label class="field">
+                <span>Avg tokens per message</span>
+                <input type="number" id="mt-msg-tokens" min="1" value="500" />
+              </label>
+            </div>
+            <p class="note" id="mt-note"></p>
+          </div>
+
+          <!-- ============ MEDIA ============ -->
+          <div class="tab-pane" id="tab-pane-multimodal" role="tabpanel">
+            <div class="row" style="margin-top:0">
+              <label class="field"><span>Image width (px)</span><input type="number" id="img-width" min="1" value="1024" /></label>
+              <label class="field"><span>Image height (px)</span><input type="number" id="img-height" min="1" value="1024" /></label>
+              <label class="field"><span>Detail</span>
+                <select id="img-detail">
+                  <option value="high" selected>High (tiled)</option>
+                  <option value="low">Low (85 tokens)</option>
+                </select>
+              </label>
+              <label class="field"><span>Images</span><input type="number" id="img-count" min="1" value="1" /></label>
+            </div>
+            <div class="row">
+              <label class="field"><span>Audio (seconds)</span><input type="number" id="audio-duration" min="1" value="60" /></label>
+              <label class="field"><span>Audio clips</span><input type="number" id="audio-count" min="1" value="1" /></label>
+              <label class="field"><span>Output tokens</span><input type="number" id="mm-output-tokens" min="0" value="200" /></label>
+            </div>
+            <p class="note" id="mm-support-note"></p>
+          </div>
+
+          <!-- ============ COMPARE ============ -->
+          <div class="tab-pane" id="tab-pane-compare" role="tabpanel">
+            <div class="row" style="margin-top:0">
+              <label class="field"><span>Model A</span><select id="compare-model-a"></select></label>
+              <label class="field"><span>Model B</span><select id="compare-model-b"></select></label>
+              <label class="field"><span>Model C</span><select id="compare-model-c"></select></label>
+            </div>
+            <div class="row">
+              <label class="field"><span>Input tokens</span><input type="number" id="compare-input-tokens" min="0" value="10000" /></label>
+              <label class="field"><span>Output tokens</span><input type="number" id="compare-output-tokens" min="0" value="2000" /></label>
+            </div>
+          </div>
+
+          <!-- ============ RANKING ============ -->
+          <div class="tab-pane" id="tab-pane-ranking" role="tabpanel">
+            <div class="row" style="margin-top:0">
+              <label class="field"><span>Input tokens</span><input type="number" id="rank-input-tokens" min="0" value="10000" /></label>
+              <label class="field"><span>Output tokens</span><input type="number" id="rank-output-tokens" min="0" value="2000" /></label>
+            </div>
+            <p class="note">Every model ranked by total cost for the token mix above. Top 3 flagged — cheapest wins.</p>
+          </div>
+
+          <!-- ============ ADVANCED ============ -->
+          <details class="advanced" id="advanced">
+            <summary>Advanced options</summary>
+            <div class="advanced-grid">
+              <label class="toggle">
+                <input type="checkbox" id="adv-batch" />
+                <span class="track"><span class="thumb"></span></span>
+                <span class="toggle-label">Batch mode <small class="faint">(−50% OpenAI)</small></span>
+              </label>
+              <label class="field">
+                <span>Reasoning effort</span>
+                <select id="adv-reasoning">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="extreme">Extreme</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Cache hit rate <output id="adv-cache-val" for="adv-cache" style="color:var(--link)">30%</output></span>
+                <input type="range" id="adv-cache" min="0" max="100" value="30" />
+              </label>
+              <label class="field">
+                <span>Requests per day <small>(for the monthly chart)</small></span>
+                <input type="number" id="adv-dau" min="1" value="1000" />
+              </label>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section class="card sticky-col" aria-live="polite">
+        <div class="result-card-head">
+          <span class="eyebrow">Estimate</span>
+          <span class="mono-label" id="result-model-name"></span>
+        </div>
+        <div id="result"></div>
+      </section>
+    </div>
+
+    <!-- CHART -->
+    <section class="chart-card" id="chart-card">
+      <div class="chart-head">
+        <h3 id="chart-title">Monthly cost</h3>
+        <div class="chart-legend" id="chart-legend"></div>
+      </div>
+      <div class="chart-box"><canvas id="chart-main"></canvas></div>
+    </section>
+  </main>
+
+  <!-- ======================= FOOTER ======================= -->
+  <footer class="footer">
+    <span class="foot-eyebrow">TokenCalc</span>
+    <p>Token counts are <strong>estimates</strong>. Prices last verified <span id="footer-updated"></span> — always check official pricing before committing to budgets.</p>
+  </footer>
+
+  <div class="toasts" id="toast-container" aria-live="polite"></div>
+
+  <script>
+    import '../scripts/ui.js';
+  </script>
+</body>
+</html>

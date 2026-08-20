@@ -1,0 +1,43 @@
+name: Sync model pricing
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # every Monday 06:00 UTC
+  workflow_dispatch: {}   # allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run price sync
+        run: node scripts/sync-prices.mjs
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --exit-code -- src/scripts/models.js; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create PR with updated prices
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: auto/sync-prices
+          title: 'chore: sync model pricing'
+          commit-message: 'chore: sync model pricing'
+          delete-branch: true
+          add-paths: src/scripts/models.js
+          base: main
