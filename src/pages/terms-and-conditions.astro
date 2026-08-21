@@ -1,0 +1,77 @@
+---
+import PageShell from '../components/PageShell.astro';
+
+const title = 'Terms & Conditions | AITokenCalculator';
+const description =
+  'Terms and conditions for using AITokenCalculator: estimates are for planning only, the service is provided as-is, and provider pricing always takes precedence.';
+
+const published = '2026-08-21T00:00:00Z';
+const updated = 'August 21, 2026';
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/terms-and-conditions/"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="Legal"
+  heading="Terms & Conditions"
+  lead="The ground rules for using AITokenCalculator — plain language, no traps."
+  updatedLabel={`Last updated ${updated}`}
+>
+  <article class="prose">
+    <h2>1 · Acceptance</h2>
+    <p>
+      By accessing AITokenCalculator ("the Service") you agree to these terms. If you disagree
+      with any part, please don't use the Service.
+    </p>
+
+    <h2>2 · What the Service is — and isn't</h2>
+    <ul>
+      <li>AITokenCalculator provides <strong>estimates</strong> of AI token counts and API costs for planning purposes.</li>
+      <li>It is <strong>not a billing system, invoice, quote or financial advice</strong>. Real charges depend on your provider agreements, exact tokenizer output, retries and taxes.</li>
+      <li>Provider pricing changes frequently. <strong>Your provider's official pricing page always takes precedence</strong> over anything shown here.</li>
+    </ul>
+
+    <h2>3 · No warranty</h2>
+    <p>
+      The Service is provided <strong>"as is" and "as available"</strong> without warranties of
+      any kind, express or implied, including accuracy, merchantability or fitness for a
+      particular purpose. Availability may be interrupted at any time.
+    </p>
+
+    <h2>4 · Limitation of liability</h2>
+    <p>
+      To the maximum extent permitted by law, AITokenCalculator and its operator shall not be
+      liable for any indirect, incidental, special or consequential damages — including budget
+      overruns, lost profits or data issues — arising from use of, or reliance on, the Service.
+      You remain solely responsible for decisions made using these estimates.
+    </p>
+
+    <h2>5 · Acceptable use</h2>
+    <ul>
+      <li>Don't attempt to disrupt, overload or reverse-engineer the hosting infrastructure.</li>
+      <li>Don't scrape the site in ways that degrade it for others; the pricing registry is meant to be useful — just ask.</li>
+      <li>Don't misrepresent the Service's estimates as official provider quotes.</li>
+    </ul>
+
+    <h2>6 · Intellectual property</h2>
+    <p>
+      The site's design, code and written content belong to AITokenCalculator. Provider names,
+      logos and trademarks belong to their respective owners and appear here for identification
+      and reference only.
+    </p>
+
+    <h2>7 · Changes</h2>
+    <p>
+      We may update these terms as the Service evolves. The "last updated" date above reflects
+      the current version; continued use after changes means acceptance.
+    </p>
+
+    <h2>8 · Contact</h2>
+    <p>
+      Questions about these terms? Use the <a href="/contact/">contact page</a> or email
+      <a href="mailto:salarypitcher@gmail.com">salarypitcher@gmail.com</a>.
+    </p>
+  </article>

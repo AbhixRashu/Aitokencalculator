@@ -1,0 +1,58 @@
+---
+import PageShell from '../components/PageShell.astro';
+
+const title = 'About AITokenCalculator — Free AI Token & API Cost Estimator';
+const description =
+  'AITokenCalculator is a free, browser-based AI token and cost calculator covering 51 models from nine providers. Learn who builds it, why it exists, and how it stays accurate.';
+
+const published = '2026-08-21T00:00:00Z';
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/about/"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="About"
+  heading="About AITokenCalculator"
+  lead="A fast, honest way to answer one question every LLM developer asks: what will this prompt actually cost me?"
+>
+  <article class="prose">
+    <h2>What is AITokenCalculator?</h2>
+    <p>
+      AITokenCalculator is a <strong>free, browser-based token and cost calculator</strong> for
+      AI APIs. It covers <strong>51 models from nine providers</strong> — OpenAI, Anthropic,
+      Google, Mistral, Meta, xAI, DeepSeek, MiniMax and Moonshot — including text, image, audio
+      and multi-turn chat workloads.
+    </p>
+    <p>
+      Paste text to get an instant token estimate, pick any model to see its real pricing
+      applied, project monthly spend at your request volume, compare up to three models side by
+      side, or rank the entire catalog by cost for your exact workload. Caching discounts, batch
+      mode and reasoning-token multipliers are all built in.
+    </p>
+
+    <h2>Why we built it</h2>
+    <p>
+      Every pricing page shows rates per million tokens; almost nobody thinks in those units.
+      The questions that actually matter — "what does this feature cost per month?", "is Claude
+      cheaper than GPT-4o for my workload?" — require math nobody wants to do in a spreadsheet.
+      We wanted one tool that answers in seconds, without signup walls or dark patterns.
+    </p>
+
+    <h2>How it stays honest</h2>
+    <ul>
+      <li><strong>Runs entirely in your browser.</strong> Nothing you type ever leaves your device — no accounts, no tracking, no uploads.</li>
+      <li><strong>Verified pricing.</strong> Rates are checked against official provider pages on a regular cadence; every page shows its verification date.</li>
+      <li><strong>Transparent method.</strong> Our <a href="/methodology/">methodology page</a> documents exactly how estimates are computed, including the limitations.</li>
+      <li><strong>Estimates, not billing.</strong> We say it everywhere: always confirm final prices with the provider.</li>
+    </ul>
+
+    <h2>What's next</h2>
+    <p>
+      Deeper workload presets (RAG pipelines, agent loops), exportable reports, and keeping pace
+      with the fastest-moving pricing landscape in software. Have an idea?
+      <a href="/contact/">Tell us</a> — the best features here started as messages.
+    </p>
+  </article>

@@ -1,0 +1,48 @@
+---
+import PageShell from '../components/PageShell.astro';
+
+const title = 'Contact AITokenCalculator — Feedback, Bugs & Pricing Corrections';
+const description =
+  'Get in touch with the AITokenCalculator team: report a bug, request a model, correct a price, or share feature feedback. We read everything.';
+
+const published = '2026-08-21T00:00:00Z';
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/contact/"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="Contact"
+  heading="Get in touch"
+  lead="Found a wrong price? Want a model added? Have a feature idea or just want to say it saved you money — we want to hear it."
+>
+  <article class="prose">
+    <h2>Email</h2>
+    <p>
+      The fastest way to reach us: <a href="mailto:salarypitcher@gmail.com">salarypitcher@gmail.com</a>.
+      Typical response time is 1–3 days.
+    </p>
+
+    <h2>GitHub</h2>
+    <p>
+      Bugs and feature requests also work great as
+      <a href="https://github.com/AbhixRashu/Aitokencalculator/issues" target="_blank" rel="noopener">GitHub issues</a> —
+      public means others can upvote and follow along.
+    </p>
+
+    <h2>Common requests</h2>
+    <ul>
+      <li><strong>Pricing correction</strong> — include the model name and the official source; corrections ship fast.</li>
+      <li><strong>New model</strong> — tell us the provider, model ID and pricing page link.</li>
+      <li><strong>Bug report</strong> — browser, what you clicked, what you expected. Screenshots welcome.</li>
+      <li><strong>Feature idea</strong> — especially workload presets: RAG, agents, fine-tuning cost math.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Note</strong>
+      AITokenCalculator is an estimator for planning. For billing disputes or account issues,
+      contact your API provider directly — we can't see or change your invoices.
+    </div>
+  </article>

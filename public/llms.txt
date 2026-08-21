@@ -6,13 +6,18 @@ AITokenCalculator estimates tokens from character density tuned per tokenizer (E
 
 ## Pages
 
-- [AI Token Calculator](https://tokencalc.app/): Free browser-based token counter and LLM API cost calculator with monthly spend projection, model comparison and full cost ranking.
-- [AI Model Pricing](https://tokencalc.app/models/): Complete price reference for all 51 supported models — input/output per million tokens, cache rates, context windows and batch discounts.
-- [Model Comparisons](https://tokencalc.app/models/): Head-to-head pricing pages for popular matchups such as GPT-4o vs Claude Sonnet, GPT-4o vs Gemini Flash and DeepSeek vs GPT-4o, with interactive workload calculators.
-- [What Are AI Tokens?](https://tokencalc.app/guides/what-are-ai-tokens/): Beginner guide to tokens, token-to-word conversion, context windows and why tokens decide API cost.
-- [Prompt Caching Guide](https://tokencalc.app/guides/prompt-caching/): How prompt caching works across OpenAI, Anthropic, Google and DeepSeek, and how to save 50–90% on repeated input tokens.
-- [How to Reduce LLM API Costs](https://tokencalc.app/guides/reduce-llm-api-costs/): Ten practical tactics to cut AI spending: model right-sizing, caching, batching, output caps and prompt trimming.
-- [Context Window Comparison](https://tokencalc.app/guides/context-window-comparison/): Context window sizes for every major AI model, sorted largest first, with what fits at each size.
+- [AI Token Calculator](http://aitokencalculator.salarypitcher.com/): Free browser-based token counter and LLM API cost calculator with monthly spend projection, model comparison and full cost ranking.
+- [AI Model Pricing](http://aitokencalculator.salarypitcher.com/models/): Complete price reference for all 51 supported models — input/output per million tokens, cache rates, context windows and batch discounts.
+- [Model Comparisons](http://aitokencalculator.salarypitcher.com/models/): Head-to-head pricing pages for popular matchups such as GPT-4o vs Claude Sonnet, GPT-4o vs Gemini Flash and DeepSeek vs GPT-4o, with interactive workload calculators.
+- [What Are AI Tokens?](http://aitokencalculator.salarypitcher.com/guides/what-are-ai-tokens/): Beginner guide to tokens, token-to-word conversion, context windows and why tokens decide API cost.
+- [Prompt Caching Guide](http://aitokencalculator.salarypitcher.com/guides/prompt-caching/): How prompt caching works across OpenAI, Anthropic, Google and DeepSeek, and how to save 50–90% on repeated input tokens.
+- [How to Reduce LLM API Costs](http://aitokencalculator.salarypitcher.com/guides/reduce-llm-api-costs/): Ten practical tactics to cut AI spending: model right-sizing, caching, batching, output caps and prompt trimming.
+- [Context Window Comparison](http://aitokencalculator.salarypitcher.com/guides/context-window-comparison/): Context window sizes for every major AI model, sorted largest first, with what fits at each size.
+
+- [About](http://aitokencalculator.salarypitcher.com/about/): Who builds AITokenCalculator and why it exists.
+- [Contact](http://aitokencalculator.salarypitcher.com/contact/): Email and GitHub for bugs, model requests and pricing corrections.
+- [Privacy Policy](http://aitokencalculator.salarypitcher.com/privacy-policy/): No personal data collected; all estimation runs in-browser.
+- [Terms & Conditions](http://aitokencalculator.salarypitcher.com/terms-and-conditions/): Estimates are for planning; provider pricing takes precedence.
 
 ## Data
 

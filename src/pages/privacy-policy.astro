@@ -1,0 +1,64 @@
+---
+import PageShell from '../components/PageShell.astro';
+
+const title = 'Privacy Policy | AITokenCalculator';
+const description =
+  'AITokenCalculator privacy policy: we collect no personal data. Everything runs in your browser, preferences stay on your device, and no text is ever uploaded.';
+
+const published = '2026-08-21T00:00:00Z';
+const updated = 'August 21, 2026';
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/privacy-policy/"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="Legal"
+  heading="Privacy Policy"
+  lead="Short version: AITokenCalculator collects nothing personal. Your text stays in your browser."
+  updatedLabel={`Last updated ${updated}`}
+>
+  <article class="prose">
+    <h2>1 · What we collect</h2>
+    <p><strong>Nothing personal.</strong> There are no accounts, no signups and no server-side processing of your inputs.</p>
+    <ul>
+      <li><strong>Text you paste or files you upload</strong> are processed entirely in your browser using JavaScript. They are never transmitted to us, never stored, never logged.</li>
+      <li><strong>Calculator settings</strong> (theme, currency) are saved in your browser's localStorage so the tool remembers them. This data stays on your device and you can clear it anytime via browser settings.</li>
+      <li><strong>No cookies</strong> are used for tracking. No advertising identifiers. No analytics profiles.</li>
+    </ul>
+
+    <h2>2 · Third-party services</h2>
+    <p>
+      The site is static — fonts and charts are self-hosted, so no third party sees your visits
+      through this tool. If hosting-layer infrastructure logs standard request data (such as your
+      IP address for security and rate-limiting), that is handled by the hosting provider under
+      its own policy and is not used by us for profiling.
+    </p>
+
+    <h2>3 · Your rights</h2>
+    <p>
+      Because no personal data is collected, stored or shared, there is nothing to export,
+      correct or delete on our side. Under GDPR, CCPA and similar regulations you retain all
+      standard rights; since we hold no data about you, exercising them requires nothing further.
+    </p>
+
+    <h2>4 · Children's privacy</h2>
+    <p>
+      The service is a developer utility not directed at children under 13, and we collect no
+      information from any visitor of any age.
+    </p>
+
+    <h2>5 · Changes to this policy</h2>
+    <p>
+      If this policy changes, the updated date at the top will change with it. Material changes
+      will be highlighted on the homepage for a reasonable period.
+    </p>
+
+    <h2>6 · Contact</h2>
+    <p>
+      Questions about privacy? Reach us at <a href="mailto:salarypitcher@gmail.com">salarypitcher@gmail.com</a>
+      or via the <a href="/contact/">contact page</a>.
+    </p>
+  </article>
