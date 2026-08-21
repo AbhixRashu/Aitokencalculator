@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 // NOTE: apna production domain yahan set karo — canonical URLs,
 // sitemap aur robots.txt isi se generate hote hain.
 export default defineConfig({
-  site: 'http://aitokencalculator.salarypitcher.com',
+  site: 'https://aitokencalculator.salarypitcher.com',
   output: 'static',
   integrations: [sitemap()],
   build: {
