@@ -1,0 +1,57 @@
+---
+import '../styles/style.css';
+import '../styles/content.css';
+import SEOHead from '../components/SEOHead.astro';
+
+const title = '404 — Page not found | AITokenCalculator';
+const description = 'That page does not exist. Head back to the free AI token calculator, model pricing tables or guides.';
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <SEOHead title={title} description={description} path="/404" noindex={true} />
+</head>
+<body>
+  <div class="page-wrap nf-wrap">
+    <span class="eyebrow">Error 404</span>
+    <h1 class="nf-code">404</h1>
+    <p class="lead">This page ran out of context. Let's get you back to something useful.</p>
+    <nav class="nf-links" aria-label="Helpful pages">
+      <a class="nf-btn primary" href="/">Open the token calculator</a>
+      <a class="nf-btn" href="/models/">Model pricing</a>
+      <a class="nf-btn" href="/guides/">Guides</a>
+    </nav>
+  </div>
+
+  <style>
+    .nf-wrap { text-align: center; padding-top: 96px; }
+    .nf-code {
+      font-size: clamp(72px, 14vw, 140px);
+      font-weight: 600;
+      letter-spacing: -0.05em;
+      color: var(--ink);
+      margin: 8px 0 4px;
+      background: linear-gradient(90deg, #007cf0, #7928ca, #ff0080);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nf-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+    .nf-btn {
+      border-radius: var(--r-pill);
+      padding: 11px 22px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--ink);
+      box-shadow: var(--shadow-2);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .nf-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-4); }
+    .nf-btn.primary { background: var(--ink); color: var(--canvas); }
+  </style>
+</body>
+</html>

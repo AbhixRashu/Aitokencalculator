@@ -1,0 +1,122 @@
+---
+import PageShell from '../../components/PageShell.astro';
+
+const title = 'How to Reduce LLM API Costs — 10 Tactics That Actually Work';
+const description =
+  'Ten proven ways to cut AI API bills: model right-sizing, prompt caching, batch mode, output caps, context trimming, routing and more — with typical savings percentages for each tactic.';
+
+const published = '2026-08-21T00:00:00Z';
+
+const faqs = [
+  {
+    q: 'What is the fastest way to lower LLM costs?',
+    a: 'Route simple requests to a mini/flash-class model. Flagship models cost 10–60× more than small ones (GPT-4o: $2.50/M input vs GPT-4o mini: $0.15/M), and most production traffic — classification, extraction, short replies — does not need a flagship.'
+  },
+  {
+    q: 'How much can prompt caching save?',
+    a: 'Cached input tokens cost 50–90% less than base input depending on provider. Apps with long stable system prompts typically see 30–60% total input savings.'
+  },
+  {
+    q: 'Does batch mode really halve costs?',
+    a: 'Yes — OpenAI and several providers offer ~50% off for asynchronous batch jobs processed within 24 hours. Perfect for backfills, evaluations and nightly pipelines; not for interactive features.'
+  },
+  {
+    q: 'Should I cap max output tokens?',
+    a: 'Always. Output tokens cost 3–5× more than input, and uncapped generations drift into verbosity. Setting a realistic cap (e.g. 300 tokens for summaries) prevents runaway spend with zero quality loss.'
+  }
+];
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/guides/reduce-llm-api-costs/"
+  type="article"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="Guide · Cost Optimization"
+  heading="How to Reduce LLM API Costs: 10 Tactics Ranked by Impact"
+  lead="Most teams overpay on AI APIs by 40–80%. These ten tactics — ordered roughly by effort-to-savings ratio — fix that without hurting answer quality."
+  faqs={faqs}
+  faqTitle="Cost reduction FAQ"
+>
+  <article class="prose">
+    <h2>1 · Right-size the model per task</h2>
+    <p>
+      The single biggest lever. Route classification, routing, extraction and short-form
+      replies to mini/flash models ($0.15–$1/M) and reserve flagships ($2.50–$15/M input)
+      for genuinely hard reasoning. A two-tier setup routinely cuts spend
+      <strong>5–20×</strong> on the cheap tier's traffic.
+    </p>
+
+    <h2>2 · Turn on prompt caching</h2>
+    <p>
+      Repeated system prompts and documents are pure waste at full price. Caching drops
+      repeated input by <strong>50–90%</strong> — see our
+      <a href="/guides/prompt-caching/">prompt caching guide</a> for provider specifics.
+    </p>
+
+    <h2>3 · Use batch mode for async work</h2>
+    <p>
+      Backfills, embeddings refreshes, evals and nightly digests don't need real-time.
+      Batch endpoints process within 24 hours at roughly <strong>half price</strong> on
+      OpenAI-compatible APIs.
+    </p>
+
+    <h2>4 · Cap output tokens</h2>
+    <p>
+      Output is the expensive side of every call. Set <code>max_output_tokens</code> to a
+      realistic ceiling and ask for concise formats ("reply in under 100 words") — savings
+      of <strong>20–50%</strong> on chatty workloads are common.
+    </p>
+
+    <h2>5 · Trim conversation history</h2>
+    <p>
+      Multi-turn chats re-send the whole transcript every turn — cost grows quadratically.
+      Summarize old turns, keep only the last N messages verbatim, or offload history to
+      retrieval. At 20+ turns this alone can save <strong>60%+</strong>.
+    </p>
+
+    <h2>6 · Compress what you send</h2>
+    <p>
+      Strip boilerplate, deduplicate pasted logs, convert tables to compact formats, and
+      retrieve only relevant chunks instead of stuffing entire documents. Every token you
+      don't send is a 100% discount.
+    </p>
+
+    <h2>7 · Cache application-side</h2>
+    <p>
+      Identical questions deserve identical answers. Hash the normalized prompt and serve
+      repeats from your own cache (Redis + TTL). Hit rates of 10–30% are typical in support
+      and search scenarios — that's direct API savings.
+    </p>
+
+    <h2>8 · Consider open-weight models</h2>
+    <p>
+      Llama, DeepSeek, Mistral and Kimi models served hosted often undercut frontier APIs
+      by <strong>2–10×</strong> for mid-difficulty tasks. Benchmark quality on your own
+      evals before switching anything user-facing.
+    </p>
+
+    <h2>9 · Set budgets and alerts</h2>
+    <p>
+      Provider dashboards let you set monthly hard limits and alert thresholds. One runaway
+      retry loop can cost more than a month of optimization — guardrails first.
+    </p>
+
+    <h2>10 · Measure per-feature unit economics</h2>
+    <p>
+      Attribute token spend to features, not accounts. Knowing that "summarize thread"
+      costs $0.004/call while "generate report" costs $0.09 tells you exactly where
+      optimization effort pays. Our free
+      <a href="/">token calculator</a> gives you the per-call number in seconds, and the
+      <a href="/models/">model pricing table</a> keeps rates honest.
+    </p>
+
+    <div class="callout">
+      <strong>Start with the big three</strong>
+      Model right-sizing + caching + output caps typically deliver 70% of total savings in
+      an afternoon of work. The rest is iteration.
+    </div>
+  </article>
+</PageShell>

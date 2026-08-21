@@ -1,0 +1,97 @@
+---
+import PageShell from '../../components/PageShell.astro';
+import { MODELS, PROVIDERS } from '../../scripts/models.js';
+
+const title = 'AI Context Window Comparison — Every Model, Largest to Smallest (2026)';
+const description =
+  'Context window sizes for 51 AI models compared: GPT-4o (128K), Claude (200K), Gemini (1M+), Llama, Grok, Mistral and DeepSeek. See what fits at each size — words, pages and code files.';
+
+const published = '2026-08-21T00:00:00Z';
+
+const rows = Object.values(MODELS)
+  .sort((a, b) => b.contextWindow - a.contextWindow);
+
+const fmtCtx = (n) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}M` : `${Math.round(n / 1000)}K`);
+const approxWords = (n) => Math.round(n * 0.75);
+const approxPages = (n) => Math.round(approxWords(n) / 500);
+
+const faqs = [
+  {
+    q: 'Which AI model has the largest context window?',
+    a: 'Gemini-class models lead with context windows of 1 million tokens and beyond — enough for roughly 750,000 words or 1,500 pages in a single request. Most frontier models from OpenAI and Anthropic sit between 128K and 200K tokens.'
+  },
+  {
+    q: 'How many words is a 128K context window?',
+    a: 'About 96,000 English words (~4 characters per token, 0.75 words per token) — roughly 190 pages of prose, a small codebase, or about 480 chat messages of 200 words each.'
+  },
+  {
+    q: 'Does a bigger context window cost more?',
+    a: 'Usually yes. Some providers charge more per token above certain context thresholds, and long prompts always cost proportionally more because you pay per token regardless of window size. Filling a 1M-token window is far pricier than filling 8K.'
+  },
+  {
+    q: 'Do models actually use their full context well?',
+    a: 'Not always. Effective recall degrades in the middle of very long contexts ("lost in the middle" effect). Best practice: keep critical instructions near the beginning or end of the prompt, even when the window is huge.'
+  }
+];
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/guides/context-window-comparison/"
+  type="article"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="Guide · Reference"
+  heading="Context Window Comparison: 51 AI Models Ranked"
+  lead="The context window is how much text a model can consider at once — your prompt, documents and the reply all share it. Here is every supported model, largest first, with what fits inside."
+  faqs={faqs}
+  faqTitle="Context window FAQ"
+>
+  <article class="prose">
+    <div class="table-card">
+      <table class="pricing">
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Provider</th>
+            <th scope="col">Context</th>
+            <th scope="col">≈ Words</th>
+            <th scope="col">≈ Pages</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((m) => (
+            <tr>
+              <td><span class="model-name">{m.name}</span></td>
+              <td>{PROVIDERS[m.provider].name}</td>
+              <td class="num">{fmtCtx(m.contextWindow)} tokens</td>
+              <td class="num">{approxWords(m.contextWindow).toLocaleString()}</td>
+              <td class="num">{approxPages(m.contextWindow).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>What actually fits in a context window</h2>
+    <ul>
+      <li><strong>8K tokens</strong> — ~6,000 words: a long essay or a handful of chat turns.</li>
+      <li><strong>32K tokens</strong> — ~24,000 words: a novella, a product spec, a day of logs.</li>
+      <li><strong>128K tokens</strong> — ~96,000 words: a small book or an entire mid-size codebase.</li>
+      <li><strong>200K+ tokens</strong> — ~150,000 words: multi-document research packs.</li>
+      <li><strong>1M+ tokens</strong> — ~750,000 words: whole repositories, hour-long transcripts, video analysis.</li>
+    </ul>
+
+    <h2>Three practical notes</h2>
+    <p>
+      First, <strong>the window is shared</strong>: input + output must fit together, so a
+      128K model with a 30K prompt leaves ~98K minus any reserved output cap.
+      Second, some providers apply <strong>tiered pricing above a threshold</strong> — the
+      same token can cost more as your conversation grows. Third, bigger windows invite
+      bigger prompts; pair them with
+      <a href="/guides/prompt-caching/">prompt caching</a> so repeated prefixes stay cheap,
+      and estimate real workloads in the <a href="/">calculator's Chat tab</a>.
+    </p>
+  </article>
+</PageShell>

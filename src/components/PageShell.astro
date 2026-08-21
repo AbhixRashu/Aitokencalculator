@@ -1,0 +1,128 @@
+---
+/* Shared shell for static SEO pages: head, breadcrumb,
+ * page header, FAQ block, CTA band and footer nav. */
+import '../styles/style.css';
+import { ClientRouter } from 'astro:transitions';
+import '../styles/content.css';
+import SEOHead from './SEOHead.astro';
+
+interface Faq { q: string; a: string; }
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  eyebrow: string;
+  heading: string;
+  lead?: string;
+  faqs?: Faq[];
+  faqTitle?: string;
+  jsonLd?: Record<string, unknown>[];
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  modifiedTime?: string;
+  crumbTrail?: { name: string; href: string }[];
+  updatedLabel?: string;   // e.g. "Prices verified August 20, 2026"
+}
+
+const {
+  title, description, path, eyebrow, heading, lead = '',
+  faqs = [], faqTitle = 'FAQ', jsonLd = [], type = 'website',
+  publishedTime, modifiedTime, crumbTrail = [], updatedLabel
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://tokencalc.app');
+const crumbs = [
+  { name: 'AITokenCalculator', href: new URL('/', site).href },
+  ...crumbTrail,
+  { name: heading }
+];
+
+const jsonLdAll = [
+  ...(crumbs.length > 1 ? [{
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.name,
+      ...(c.href ? { item: new URL(c.href, site).href } : {})
+    }))
+  }] : []),
+  ...(faqs.length ? [{
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  }] : []),
+  ...jsonLd
+];
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <ClientRouter />
+  <SEOHead title={title} description={description} path={path} type={type} jsonLd={jsonLdAll} publishedTime={publishedTime} modifiedTime={modifiedTime} />
+</head>
+<body>
+  <div class="page-wrap">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">AITokenCalculator</a>
+      {crumbTrail.map((c) => <span><span class="bc-sep">/</span> <a href={c.href}>{c.name}</a></span>)}
+      <span>/</span>
+      <span aria-current="page">{heading}</span>
+    </nav>
+
+    <header class="page-head">
+      <span class="eyebrow">{eyebrow}</span>
+      <h1 set:html={heading} />
+      {lead && <p class="lead" set:html={lead} />}
+      {updatedLabel && <span class="updated-pill">{updatedLabel}</span>}
+    </header>
+
+    <slot />
+
+    {faqs.length > 0 && (
+      <section class="faq-section" aria-labelledby="faq-h">
+        <h2 id="faq-h">{faqTitle}</h2>
+        {faqs.map((f) => (
+          <div class="faq-item">
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </section>
+    )}
+
+    <aside class="cta-band">
+      <div>
+        <h2>Try it on your own numbers</h2>
+        <p>Free token &amp; cost calculator — 51 models, instant results.</p>
+      </div>
+      <a class="btn-light" href="/">Open calculator →</a>
+    </aside>
+  </div>
+
+  <script>
+    import '../scripts/reveal.js';
+  </script>
+
+  <footer class="page-footer">
+    <nav aria-label="Site">
+      <a href="/">Token calculator</a>
+      <a href="/models/">Model pricing</a>
+      <a href="/guides/">Guides</a>
+      <a href="/guides/what-are-ai-tokens/">What are AI tokens?</a>
+      <a href="/guides/prompt-caching/">Prompt caching</a>
+      <a href="/guides/context-window-comparison/">Context windows</a>
+    </nav>
+    <p>Token counts are estimates. Always verify against official provider pricing.</p>
+  </footer>
+</body>
+</html>

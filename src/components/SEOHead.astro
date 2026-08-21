@@ -1,0 +1,91 @@
+---
+/* Reusable SEO <head> block: canonical, Open Graph, Twitter cards,
+ * favicons and JSON-LD structured data. Every page passes its own
+ * title / description / path so each URL stays unique + indexable.
+ * Self-hosted fonts are imported here so every page gets them. */
+import '@fontsource/geist-sans/400.css';
+import '@fontsource/geist-sans/500.css';
+import '@fontsource/geist-sans/600.css';
+import '@fontsource/geist-mono/400.css';
+import '@fontsource/geist-mono/500.css';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;            // e.g. "/", "/models/"
+  type?: 'website' | 'article';
+  jsonLd?: Record<string, unknown>[];
+  publishedTime?: string;
+  modifiedTime?: string;
+  noindex?: boolean; // true → keep out of search indexes (404s etc.)
+}
+
+const {
+  title,
+  description,
+  path,
+  type = 'website',
+  jsonLd = [],
+  publishedTime,
+  modifiedTime,
+  noindex = false
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://tokencalc.app');
+const canonical = new URL(path, site).href;
+const ogImage = new URL('/og.png', site).href;
+const SITE_NAME = 'AITokenCalculator';
+
+const defaultLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: site.href,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${new URL('/models/', site).href}?q={search_term_string}`,
+      'query-input': 'required name=search_term_string'
+    }
+  }
+];
+
+const allLd = [...defaultLd, ...jsonLd];
+---
+
+<!-- Primary meta -->
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1"} />
+<meta name="author" content={SITE_NAME} />
+<meta name="theme-color" content="#171717" />
+
+<!-- Open Graph -->
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`${SITE_NAME} — AI token & cost calculator`} />
+<meta property="og:locale" content="en_US" />
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<link rel="alternate" type="application/rss+xml" title="AITokenCalculator — Guides & Comparisons" href={new URL("/rss.xml", site).href}
+
+<!-- Icons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<!-- Structured data -->
+{allLd.map((schema) => <script type="application/ld+json" set:html={JSON.stringify(schema)} />)}

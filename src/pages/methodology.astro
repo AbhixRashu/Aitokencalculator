@@ -1,0 +1,121 @@
+---
+import PageShell from '../components/PageShell.astro';
+import { PROVIDERS, TOKENIZER_TYPES } from '../scripts/models.js';
+
+const title = 'Methodology — How AITokenCalculator Estimates Tokens & Verifies Pricing';
+const description =
+  'Exactly how AITokenCalculator estimates token counts, computes API costs, and verifies pricing for 51 AI models across nine providers. Data sources, formulas, update cadence and limitations.';
+
+const published = '2026-08-21T00:00:00Z';
+
+const tokenizerRows = Object.entries(TOKENIZER_TYPES).map(([key, t]) => ({
+  name: t.label,
+  latin: t.charsPerToken.latin,
+  cjk: t.charsPerToken.cjk,
+  code: t.charsPerToken.code
+}));
+
+const providerLinks = Object.values(PROVIDERS).map((p) => ({ name: p.name, url: p.url }));
+
+const faqs = [
+  {
+    q: 'Are token counts exact?',
+    a: 'No — they are high-accuracy estimates based on per-tokenizer character density (about ±5% for typical English). For exact counts use the provider\'s own tokenizer; for budgeting, planning and comparisons, our estimates are purpose-built.'
+  },
+  {
+    q: 'Where do prices come from?',
+    a: 'Every rate is manually verified against the provider\'s official pricing page, and an automated GitHub Action re-syncs the registry regularly. The verification date is printed on every page.'
+  },
+  {
+    q: 'Does anything I type leave my browser?',
+    a: 'No. All estimation runs client-side in JavaScript. No text, file or workload data is uploaded, stored or logged.'
+  },
+  {
+    q: 'Why do my real bills differ from estimates?',
+    a: 'Real invoices include factors estimates can\'t know: exact tokenizer output, provider-side retries, image tiling nuances, tiered context pricing and taxes. Treat estimates as planning numbers with a safety margin.'
+  }
+];
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/methodology/"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="Trust · Transparency"
+  heading="How AITokenCalculator works"
+  lead="No black boxes. Here is exactly how tokens are estimated, how costs are computed, where pricing data comes from, and when it is refreshed."
+  crumbTrail={[{ name: 'Guides', href: '/guides/' }]}
+  faqs={faqs}
+  faqTitle="Methodology FAQ"
+>
+  <article class="prose">
+    <h2>1 · Token estimation</h2>
+    <p>
+      Each model uses a specific tokenizer, and each tokenizer packs characters into tokens at a
+      different density. We maintain measured density profiles rather than one lazy average:
+    </p>
+    <div class="table-card">
+      <table class="pricing">
+        <thead>
+          <tr><th scope="col">Tokenizer</th><th scope="col">Latin</th><th scope="col">CJK</th><th scope="col">Code</th><th scope="col">Chars / token</th></tr>
+        </thead>
+        <tbody>
+          {tokenizerRows.map((r) => (
+            <tr>
+              <td><span class="model-name">{r.name}</span></td>
+              <td class="num">{r.latin}</td>
+              <td class="num">{r.cjk}</td>
+              <td class="num">{r.code}</td>
+              <td>per script mix</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Your text is analysed script-by-script (Latin, CJK, code, Arabic, Devanagari) and each segment
+      contributes tokens at its own density — so a mixed English/Chinese/code prompt gets a far better
+      estimate than any single-ratio rule of thumb.
+    </p>
+
+    <h2>2 · Cost computation</h2>
+    <p>
+      Costs are computed from each model's official rates:
+      <code>input cost = input tokens × input price ÷ 1,000,000</code>, likewise for output. On top of the
+      base we apply the provider's real discount mechanics:
+    </p>
+    <ul>
+      <li><strong>Prompt caching</strong> — your cache-hit percentage bills reads at the model's cached-input rate.</li>
+      <li><strong>Batch mode</strong> — models that support async batching get their documented discount.</li>
+      <li><strong>Reasoning tokens</strong> — reasoning models bill hidden thinking tokens as output, scaled by effort level.</li>
+      <li><strong>Tiered pricing</strong> — models with higher rates above a context threshold switch tiers automatically.</li>
+      <li><strong>Multimodal</strong> — images use OpenAI's tiling math or flat-rate equivalents; audio uses per-second token rates.</li>
+    </ul>
+    <p>The same engine powers this website's calculator and every static number on the comparison pages.</p>
+
+    <h2>3 · Pricing data sources</h2>
+    <p>
+      Rates are verified by hand against each provider's official pricing page, then kept fresh by an
+      automated sync workflow. Last full verification: <strong>August 20, 2026</strong>. Official sources:
+    </p>
+    <ul class="src-list">
+      {providerLinks.map((p) => (
+        <li><a href={p.url} target="_blank" rel="noopener">{p.name} — official pricing ↗</a></li>
+      ))}
+    </ul>
+
+    <h2>4 · Limitations (the honest part)</h2>
+    <ul>
+      <li>Token counts are estimates — expect roughly ±5% on typical prose versus exact tokenizer output.</li>
+      <li>Promotional rates, enterprise discounts, taxes and FX conversion are out of scope.</li>
+      <li>Fine-tuned and regional model variants may be priced differently from their base models.</li>
+      <li>Providers change prices without notice — always confirm before committing budgets.</li>
+    </ul>
+    <p>
+      Spotted something off? It's a static site built to be corrected fast — the pricing registry lives in
+      one reviewed file and updates ship within hours.
+    </p>
+  </article>
+</PageShell>

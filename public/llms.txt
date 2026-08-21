@@ -1,0 +1,19 @@
+# AITokenCalculator
+
+> Free AI token and API cost calculator. Estimate token counts and dollar costs across 51 AI models from nine providers — OpenAI, Anthropic, Google, Mistral, Meta, xAI, DeepSeek, MiniMax and Moonshot — directly in the browser. No signup, no API key.
+
+AITokenCalculator estimates tokens from character density tuned per tokenizer (English ≈ 4 chars/token), supports text, image, audio and multi-turn chat workloads, and applies prompt-cache discounts, batch-mode pricing and reasoning-token multipliers. Pricing data is verified against official provider pages (last verified 2026-08-20). AITokenCalculator is an estimator for planning — not a billing source.
+
+## Pages
+
+- [AI Token Calculator](https://tokencalc.app/): Free browser-based token counter and LLM API cost calculator with monthly spend projection, model comparison and full cost ranking.
+- [AI Model Pricing](https://tokencalc.app/models/): Complete price reference for all 51 supported models — input/output per million tokens, cache rates, context windows and batch discounts.
+- [Model Comparisons](https://tokencalc.app/models/): Head-to-head pricing pages for popular matchups such as GPT-4o vs Claude Sonnet, GPT-4o vs Gemini Flash and DeepSeek vs GPT-4o, with interactive workload calculators.
+- [What Are AI Tokens?](https://tokencalc.app/guides/what-are-ai-tokens/): Beginner guide to tokens, token-to-word conversion, context windows and why tokens decide API cost.
+- [Prompt Caching Guide](https://tokencalc.app/guides/prompt-caching/): How prompt caching works across OpenAI, Anthropic, Google and DeepSeek, and how to save 50–90% on repeated input tokens.
+- [How to Reduce LLM API Costs](https://tokencalc.app/guides/reduce-llm-api-costs/): Ten practical tactics to cut AI spending: model right-sizing, caching, batching, output caps and prompt trimming.
+- [Context Window Comparison](https://tokencalc.app/guides/context-window-comparison/): Context window sizes for every major AI model, sorted largest first, with what fits at each size.
+
+## Data
+
+Model pricing registry: 51 models, fields include input/output USD per million tokens, context window, cache read/write rates, batch discount, vision/audio/reasoning support. Updated 2026-08-20.

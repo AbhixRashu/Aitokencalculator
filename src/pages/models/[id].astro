@@ -1,0 +1,168 @@
+---
+import PageShell from '../../components/PageShell.astro';
+import { MODELS, PROVIDERS } from '../../scripts/models.js';
+import { Calculator } from '../../scripts/calculator.js';
+import { COMPARISONS } from '../../data/comparisons.js';
+
+export function getStaticPaths() {
+  return Object.values(MODELS).map((m) => ({
+    params: { id: m.id },
+    props: { model: m }
+  }));
+}
+
+const { model: m } = Astro.props;
+const P = PROVIDERS[m.provider];
+const name = m.name;
+
+const title = `${name} Pricing & Token Cost Calculator (${m.contextWindow >= 1000 ? Math.round(m.contextWindow / 1000) + 'K context' : m.contextWindow})`;
+const description = `${name} API pricing: $${m.in}/M input, $${m.out}/M output tokens${m.cacheRead != null ? `, cached input $${m.cacheRead}/M` : ''}. Context window ${m.contextWindow.toLocaleString('en-US')} tokens. Estimate your ${name} costs free.`;
+
+/* == numbers == */
+const fmtP = (v) => (v == null ? '—' : `$${Number(v) % 1 === 0 ? Number(v) : Number(v).toFixed(2)}`);
+const fmtCtx = (n) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}M` : `${Math.round(n / 1000)}K`);
+const words = Math.round(m.contextWindow * 0.75);
+const pages = Math.round(words / 500);
+
+/* == static scenarios via real engine == */
+const opts = { batch: false, reasoningEffort: 'medium', cacheHitRate: 0 };
+const calc = (inp, out) => Calculator.calculateFullCost({ input: inp, output: out }, m, opts).total;
+const light = calc(1_000, 300);
+const standard = calc(10_000, 2_000);
+const heavy = calc(100_000, 20_000);
+const monthly = standard * 1000 * 30.4375;
+
+/* == related comparisons == */
+const relVs = COMPARISONS.filter((c) => c.a === m.id || c.b === m.id)
+  .map((c) => {
+    const otherId = c.a === m.id ? c.b : c.a;
+    const other = MODELS[otherId];
+    return { href: `/vs/${c.a}-vs-${c.b}/`, label: `${name} vs ${other.name}` };
+  });
+
+/* == capabilities sentence pieces == */
+const caps = [];
+if (m.vision) caps.push('vision & image understanding');
+if (m.audio) caps.push('audio input');
+if (m.reasoning) caps.push('hidden reasoning tokens');
+const capsSentence = caps.length ? caps.join(', ') : 'text-only processing';
+
+const updatedDate = new Date(m.updated + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+/* FAQ strings via concatenation (Astro compiler-safe pattern) */
+const faqs = [
+  {
+    q: 'How much does ' + name + ' cost?',
+    a: name + ' charges ' + fmtP(m.in) + ' per million input tokens and ' + fmtP(m.out) +
+      ' per million output tokens' + (m.cacheRead != null ? (', with cached input reads at ' + fmtP(m.cacheRead) + '/M') : '') + '.' +
+      (m.batchSupported ? (' Batch mode cuts both rates by ' + Math.round((1 - m.batchDiscount) * 100) + '% for asynchronous workloads.') : '')
+  },
+  {
+    q: 'What is the context window of ' + name + '?',
+    a: name + ' supports a context window of ' + m.contextWindow.toLocaleString('en-US') + ' tokens (' +
+      fmtCtx(m.contextWindow) + ') — roughly ' + words.toLocaleString('en-US') + ' English words or about ' +
+      pages.toLocaleString('en-US') + ' pages of text in a single request.'
+  },
+  {
+    q: 'Does ' + name + ' support images, audio or reasoning?',
+    a: name + ' offers ' + capsSentence + '.' + (m.note ? (' ' + m.note) : '')
+  },
+  {
+    q: 'How do I estimate my ' + name + ' bill?',
+    a: 'A typical workload of 10K input and 2K output tokens costs about ' + formatUSD(standard) +
+      ' per call with ' + name + '. At 1,000 requests per day that is roughly ' + formatUSD(monthly) +
+      ' per month. Use the free AITokenCalculator to run your exact numbers.'
+  }
+];
+
+function formatUSD(v) {
+  return '$' + (v >= 1 ? v.toFixed(2) : v.toFixed(4));
+}
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  dateModified: m.updated + 'T00:00:00Z',
+  author: { '@type': 'Organization', name: 'AITokenCalculator' },
+  publisher: { '@type': 'Organization', name: 'AITokenCalculator' },
+  mainEntityOfPage: new URL(`/models/${m.id}/`, Astro.site).href
+}];
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path={`/models/${m.id}/`}
+  type="article"
+  modifiedTime={m.updated + 'T00:00:00Z'}
+  eyebrow={`${P.name} · Pricing`}
+  heading={`${name} pricing`}
+  lead={`Complete ${name} API cost reference: ${fmtP(m.in)}/M input, ${fmtP(m.out)}/M output, ${fmtCtx(m.contextWindow)} token context window${m.cacheRead != null ? `, ${fmtP(m.cacheRead)}/M cached reads` : ''}. Verified against official sources.`}
+  updatedLabel={`Prices verified ${updatedDate}`}
+  crumbTrail={[{ name: 'Model pricing', href: '/models/' }]}
+  faqs={faqs}
+  faqTitle={`${name} FAQ`}
+  jsonLd={jsonLd}
+>
+  <section class="model-hero" aria-label={`${name} key facts`}>
+    <div class="mh-card">
+      <img class="duel-logo" src={P.icon} alt="" width="44" height="44" />
+      <div>
+        <div class="duel-name">{name}</div>
+        <div class="duel-provider">{P.name} · <a class="mono-link" href={P.url} target="_blank" rel="noopener">official pricing ↗</a></div>
+      </div>
+    </div>
+    <dl class="mh-grid">
+      <div><dt>Input / M</dt><dd>{fmtP(m.in)}</dd></div>
+      <div><dt>Output / M</dt><dd>{fmtP(m.out)}</dd></div>
+      {m.cacheRead != null && <div><dt>Cache read</dt><dd>{fmtP(m.cacheRead)}</dd></div>}
+      {m.cacheWrite != null && <div><dt>Cache write</dt><dd>{fmtP(m.cacheWrite)}</dd></div>}
+      <div><dt>Context</dt><dd>{fmtCtx(m.contextWindow)}</dd></div>
+      <div><dt>Batch</dt><dd>{m.batchSupported ? `−${Math.round((1 - m.batchDiscount) * 100)}%` : '—'}</dd></div>
+      <div><dt>Vision</dt><dd>{m.vision ? 'Yes' : '—'}</dd></div>
+      <div><dt>Reasoning</dt><dd>{m.reasoning ? 'Yes' : '—'}</dd></div>
+    </dl>
+  </section>
+
+  <article class="prose">
+    <h2>What {name} costs in practice</h2>
+    <div class="table-card">
+      <table class="pricing">
+        <thead>
+          <tr><th scope="col">Workload</th><th scope="col">Cost / call</th><th scope="col">Cost @ 1K req/day</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Light · 1K in / 300 out</td><td class="num">{formatUSD(light)}</td><td class="num">{formatUSD(light * 1000 * 30.4375)}<small class="per-mo">/mo</small></td></tr>
+          <tr><td>Standard · 10K in / 2K out</td><td class="num">{formatUSD(standard)}</td><td class="num">{formatUSD(standard * 1000 * 30.4375)}<small class="per-mo">/mo</small></td></tr>
+          <tr><td>Heavy · 100K in / 20K out</td><td class="num">{formatUSD(heavy)}</td><td class="num">{formatUSD(heavy * 1000 * 30.4375)}<small class="per-mo">/mo</small></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Estimates assume medium reasoning effort, no batch discounts and no prompt caching. Turn on
+      <a href="/guides/prompt-caching/">prompt caching</a> and the input side typically drops 50–90% —
+      run your own mix in the <a href={`/?m=${m.id}&tab=manual&in=10000&out=2000`}>free calculator preloaded with {name}</a>.
+    </p>
+
+    {relVs.length > 0 && (
+      <>
+        <h2>How {name} compares</h2>
+        <ul class="vs-links">
+          {relVs.map((c) => (
+            <li><a class="vs-pill" href={c.href}>{c.label}</a></li>
+          ))}
+          <li><a class="vs-pill ghost" href="/models/">All 51 models →</a></li>
+        </ul>
+      </>
+    )}
+
+    <h2>About this page</h2>
+    <p>
+      Prices were last verified on {updatedDate} against {P.name}'s official pricing page. Providers reprice
+      frequently — see our <a href="/methodology/">methodology</a> for exactly how estimates are computed,
+      and always confirm final rates with the provider before budgeting.
+    </p>
+  </article>
+</PageShell>

@@ -242,6 +242,8 @@ function resultActions() {
   return `
     <div class="result-actions">
       <button class="btn-pill primary sm" id="btn-copy">Copy summary</button>
+      <button class="btn-pill secondary sm" id="btn-share">Copy link</button>
+      <button class="btn-pill secondary sm" id="btn-export-png">PNG</button>
       <button class="btn-pill secondary sm" id="btn-export-csv">CSV</button>
       <button class="btn-pill secondary sm" id="btn-export-json">JSON</button>
     </div>`;
@@ -283,7 +285,7 @@ function renderResult() {
   };
 
   const stdSummary = (model, result) => ({
-    tool: 'TokenCalc',
+    tool: 'AITokenCalculator',
     generated: new Date().toISOString(),
     currency: state.currency,
     model: model.id,
@@ -359,7 +361,7 @@ function renderResult() {
       const r = renderStandardResult(parts, result.total, `${model.name} · ${result.tokens.input.toLocaleString()} input tokens`, null);
       html = r.html;
       summaryObj = {
-        tool: 'TokenCalc', generated: new Date().toISOString(), currency: state.currency,
+        tool: 'AITokenCalculator', generated: new Date().toISOString(), currency: state.currency,
         model: model.id, modelName: model.name,
         media: {
           image: { width: parseInt($('#img-width').value), height: parseInt($('#img-height').value), detail: $('#img-detail').value, count: imgCount, tokens: img.tokens * imgCount },
@@ -385,7 +387,7 @@ function renderResult() {
       const r = renderStandardResult(parts, mt.totalCost, `${model.name} · ${mt.totalTurns} turns · peak ${mt.growth[mt.growth.length - 1].toLocaleString()} ctx`, null);
       html = r.html;
       summaryObj = {
-        tool: 'TokenCalc', generated: new Date().toISOString(), currency: state.currency,
+        tool: 'AITokenCalculator', generated: new Date().toISOString(), currency: state.currency,
         model: model.id, modelName: model.name,
         turns: mt.totalTurns, avgMsgTokens: parseInt($('#mt-msg-tokens').value) || 1,
         totalInputTokens: mt.totalInputTokens, totalOutputTokens: mt.totalOutputTokens,
@@ -404,13 +406,13 @@ function renderResult() {
       const cards = results.map(r => `
         <div class="cc ${r.result.total === best ? 'best' : ''}">
           ${r.result.total === best ? '<span class="cc-badge">Cheapest</span>' : ''}
-          <div class="cc-name"><span class="bl-dot" style="background:${getProvider(r.model.provider).color}"></span>${r.model.name}</div>
+          <div class="cc-name"><img class="cc-logo" src="${getProvider(r.model.provider).icon}" alt="" loading="lazy" />${r.model.name}</div>
           <div class="cc-cost">${fmt(r.result.total)}</div>
           <div class="cc-meta">${r.result.tokens.input.toLocaleString()} in · ${r.result.tokens.effectiveOutput.toLocaleString()} out</div>
         </div>`).join('');
       html = `<div class="compare-cards">${cards}</div>` + resultActions();
       summaryObj = {
-        tool: 'TokenCalc', generated: new Date().toISOString(), currency: state.currency,
+        tool: 'AITokenCalculator', generated: new Date().toISOString(), currency: state.currency,
         inputTokens: parseInt($('#compare-input-tokens').value) || 0,
         outputTokens: parseInt($('#compare-output-tokens').value) || 0,
         models: results.map(r => ({ id: r.model.id, name: r.model.name, totalUSD: r.result.total })),
@@ -434,7 +436,7 @@ function renderResult() {
       const rowsHtml = rows.map((r, i) => `
         <div class="rank-row ${i < 3 ? 'rank-top' : ''}">
           <span class="rank-no">${medal[i] || (i + 1)}</span>
-          <span class="bl-dot" style="background:${getProvider(r.model.provider).color}"></span>
+          <img class="cc-logo" src="${getProvider(r.model.provider).icon}" alt="" loading="lazy" />
           <span class="rank-name">${r.model.name}</span>
           <span class="rank-meta mono">$${r.model.in} / $${r.model.out}·M</span>
           <span class="rank-cost">${fmt(r.result.total)}</span>
@@ -450,7 +452,7 @@ function renderResult() {
         </div>
         <div class="rank-list">${rowsHtml}</div>` + resultActions();
       summaryObj = {
-        tool: 'TokenCalc', generated: new Date().toISOString(), currency: state.currency,
+        tool: 'AITokenCalculator', generated: new Date().toISOString(), currency: state.currency,
         inputTokens: parseInt($('#rank-input-tokens').value) || 0,
         outputTokens: parseInt($('#rank-output-tokens').value) || 0,
         models: rows.map(r => ({ id: r.model.id, name: r.model.name, totalUSD: r.result.total })),
@@ -487,6 +489,7 @@ function renderResult() {
 function renderCharts() {
   const plan = window.__chartPlan || { kind: null };
   const card = $('#chart-card');
+  if (!card) return;
   const box = $('.chart-box');
   if (!plan.kind || !Charts.ready()) {
     card.classList.add('hidden');
@@ -508,6 +511,101 @@ function renderActive() {
   renderResult();
   renderCharts();
   animateCost();
+  syncURL();
+}
+
+/* ---------------- Shareable URL ---------------- */
+let urlTimer = null;
+
+function collectParams() {
+  const p = new URLSearchParams();
+  const val = sel => ($(sel) ? $(sel).value : '');
+  p.set('m', state.model);
+  p.set('tab', state.tab);
+  if (state.currency !== 'USD') p.set('cur', state.currency);
+  if ($('#adv-batch')?.checked) p.set('batch', '1');
+  if ($('#adv-cache') && $('#adv-cache').value !== '30') p.set('cache', $('#adv-cache').value);
+  if ($('#adv-reasoning') && $('#adv-reasoning').value !== 'medium') p.set('effort', $('#adv-reasoning').value);
+
+  switch (state.tab) {
+    case 'text': {
+      const t = $('#text-input').value;
+      if (t) p.set('text', t.slice(0, 1500));
+      if (val('#text-output-tokens') !== '200') p.set('out', val('#text-output-tokens'));
+      break;
+    }
+    case 'manual':
+      if (val('#manual-input-tokens') !== '5000') p.set('in', val('#manual-input-tokens'));
+      if (val('#manual-output-tokens') !== '1000') p.set('out', val('#manual-output-tokens'));
+      break;
+    case 'multiturn':
+      if (val('#mt-turns') !== '10') p.set('turns', val('#mt-turns'));
+      if (val('#mt-msg-tokens') !== '500') p.set('msg', val('#mt-msg-tokens'));
+      break;
+    case 'multimodal': {
+      const mm = { w: '#img-width', h: '#img-height', d: '#img-detail', n: '#img-count', a: '#audio-duration', c: '#audio-count', o: '#mm-output-tokens' };
+      const defaults = { w: '1024', h: '1024', d: 'high', n: '1', a: '60', c: '1', o: '200' };
+      for (const [k, sel] of Object.entries(mm)) {
+        if (val(sel) !== defaults[k]) p.set(k, val(sel));
+      }
+      break;
+    }
+    case 'compare': {
+      ['a', 'b', 'c'].forEach((k, i) => {
+        if (state.compareModels[i] !== ['gpt-4o', 'claude-3-5-sonnet', 'gemini-2-0-flash'][i]) p.set(k, state.compareModels[i]);
+      });
+      if (val('#compare-input-tokens') !== '10000') p.set('in', val('#compare-input-tokens'));
+      if (val('#compare-output-tokens') !== '2000') p.set('out', val('#compare-output-tokens'));
+      break;
+    }
+    case 'ranking':
+      if (val('#rank-input-tokens') !== '10000') p.set('in', val('#rank-input-tokens'));
+      if (val('#rank-output-tokens') !== '2000') p.set('out', val('#rank-output-tokens'));
+      break;
+  }
+  return p;
+}
+
+function syncURL() {
+  clearTimeout(urlTimer);
+  urlTimer = setTimeout(() => {
+    try {
+      const qs = collectParams().toString();
+      history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+    } catch (_) { /* no-op */ }
+  }, 250);
+}
+
+function restoreFromURL() {
+  let p;
+  try { p = new URLSearchParams(location.search); } catch (_) { return; }
+  if (!p.toString()) return;
+
+  if (p.get('m') && getModel(p.get('m'))) state.model = p.get('m');
+  if (p.get('cur') && CURRENCIES[p.get('cur')]) state.currency = p.get('cur');
+  if (['text', 'manual', 'multiturn', 'multimodal', 'compare', 'ranking'].includes(p.get('tab'))) state.tab = p.get('tab');
+  if (p.get('batch') === '1') $('#adv-batch').checked = true;
+  if (p.get('cache')) { $('#adv-cache').value = p.get('cache'); $('#adv-cache-val').textContent = p.get('cache') + '%'; }
+  if (p.get('effort')) $('#adv-reasoning').value = p.get('effort');
+
+  const setVal = (sel, key) => { const v = p.get(key); if (v !== null && $(sel)) $(sel).value = v; };
+  setVal('#text-output-tokens', 'out');
+  setVal('#manual-input-tokens', 'in');
+  setVal('#manual-output-tokens', 'out');
+  setVal('#mt-turns', 'turns'); setVal('#mt-msg-tokens', 'msg');
+  setVal('#img-width', 'w'); setVal('#img-height', 'h'); setVal('#img-detail', 'd');
+  setVal('#img-count', 'n'); setVal('#audio-duration', 'a'); setVal('#audio-count', 'c');
+  setVal('#mm-output-tokens', 'o');
+  setVal('#compare-input-tokens', 'in'); setVal('#compare-output-tokens', 'out');
+  setVal('#rank-input-tokens', 'in'); setVal('#rank-output-tokens', 'out');
+
+  ['a', 'b', 'c'].forEach((k, i) => {
+    const v = p.get(k);
+    if (v && getModel(v)) state.compareModels[i] = v;
+  });
+
+  const text = p.get('text');
+  if (text) $('#text-input').value = text;
 }
 
 /* ---------------- Hero cost animation ---------------- */
@@ -611,12 +709,22 @@ function wireEvents() {
     const id = e.target.id;
     if (id === 'btn-export-csv') {
       const rows = collectExportRows();
-      if (rows.length) { Exporter.exportCSV(rows, 'tokencalc'); toast('CSV downloaded'); }
+      if (rows.length) { Exporter.exportCSV(rows, 'ai-token-calculator'); toast('CSV downloaded'); }
     } else if (id === 'btn-export-json') {
-      if (window.__summary) { Exporter.exportJSON(window.__summary, 'tokencalc'); toast('JSON downloaded'); }
+      if (window.__summary) { Exporter.exportJSON(window.__summary, 'ai-token-calculator'); toast('JSON downloaded'); }
     } else if (id === 'btn-copy') {
       const text = buildSummaryText();
       Exporter.copyText(text, 'Copied').then(ok => toast(ok ? 'Summary copied' : 'Copy failed', ok ? '' : 'error'));
+    } else if (id === 'btn-share') {
+      syncURL();
+      Exporter.copyText(location.href).then(ok => toast(ok ? 'Link copied — share this estimate' : 'Copy failed', ok ? '' : 'error'));
+    } else if (id === 'btn-export-png') {
+      const card = $('#result');
+      if (card) {
+        toast('Rendering PNG…');
+        Exporter.exportPNG(card, 'ai-token-calculator')
+          .then(ok => toast(ok ? 'PNG downloaded' : 'PNG export failed', ok ? '' : 'error'));
+      }
     }
   });
 
@@ -670,7 +778,7 @@ function collectExportRows() {
 function buildSummaryText() {
   const s = window.__summary;
   if (!s) return '';
-  const lines = ['TokenCalc summary', `Model: ${s.modelName}`];
+  const lines = ['AITokenCalculator summary', `Model: ${s.modelName}`];
   if (s.tokens) {
     lines.push(`Input tokens: ${s.tokens.input}`);
     lines.push(`Output tokens: ${s.tokens.output}`);
@@ -684,9 +792,6 @@ function buildSummaryText() {
 
 /* ---------------- Init ---------------- */
 function init() {
-  if (window.__tokencalcInit) return;
-  window.__tokencalcInit = true;
-
   state.theme = localStorage.getItem('tokencalc-theme') || 'light';
   state.currency = localStorage.getItem('tokencalc-currency') || 'USD';
   applyTheme();
@@ -704,20 +809,29 @@ function init() {
 
   populateModelSelect();
   populateCompareSelects();
+  restoreFromURL();
+  $('#model-select').value = state.model;
+  ['compare-model-a', 'compare-model-b', 'compare-model-c'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.value = state.compareModels[i];
+  });
+  $('#currency-select').value = state.currency;
   updateModelHint();
+  switchTab(state.tab);
   wireEvents();
   updateTextEstimate();
   renderActive();
 }
 
-function bootstrap() {
-  if (typeof document === 'undefined') return;
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-}
-bootstrap();
+/* astro:page-load fires on first load AND after every client-side
+ * navigation, so the calculator re-initialises on the fresh DOM. */
+document.addEventListener('astro:page-load', () => {
+  if ($('#model-select')) init();
+});
+
+// Single persistent resize handler — safe across page swaps.
+window.addEventListener('resize', () => {
+  if (document.getElementById('chart-card')) renderCharts();
+});
 
 export { init, state, buildSummaryText, collectExportRows }; // eslint-disable-line no-unused-vars

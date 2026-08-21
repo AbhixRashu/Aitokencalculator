@@ -1,0 +1,113 @@
+---
+import PageShell from '../../components/PageShell.astro';
+
+const title = 'Prompt Caching Guide — Save 50–90% on LLM API Costs (2026)';
+const description =
+  'Prompt caching cuts repeated input token costs by 50–90% on OpenAI, Anthropic, Google Gemini and DeepSeek. Learn how cache writes, reads, TTLs and minimum lengths work — with real price math examples.';
+
+const published = '2026-08-21T00:00:00Z';
+
+const faqs = [
+  {
+    q: 'How much does prompt caching save?',
+    a: 'Cache reads cost 10–50% of base input price depending on provider: OpenAI cached input is 50% off, Anthropic cache reads are ~90% off, Gemini context caching is 75% off and DeepSeek automatically applies ~90% off for repeated prefixes.'
+  },
+  {
+    q: 'Do cached tokens cost anything to write?',
+    a: 'Anthropic charges a one-time 25% premium on cache writes; OpenAI charges nothing extra (caching is automatic); Gemini has a storage fee per hour; DeepSeek charges nothing. Write costs pay for themselves after one or two reuses.'
+  },
+  {
+    q: 'How long does an LLM prompt cache live?',
+    a: 'OpenAI caches evict after 5–10 minutes of inactivity (up to a few hours off-peak), Anthropic defaults to 5 minutes (refreshable to 1 hour), Gemini lets you set TTLs from minutes to hours, and DeepSeek caches for hours automatically.'
+  },
+  {
+    q: 'What is the minimum prompt length for caching?',
+    a: 'OpenAI requires 1,024 tokens, Anthropic 1,024 (2,048 for some models), Gemini 4,096 for explicit caching, and DeepSeek 64. Shorter prompts cannot be cached.'
+  }
+];
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/guides/prompt-caching/"
+  type="article"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="Guide · Cost Optimization"
+  heading="Prompt Caching: Cut Repeated Input Costs by Up to 90%"
+  lead="If your app sends the same system prompt, documents or conversation history again and again, you are overpaying on every request. Prompt caching fixes that — here is how each provider implements it."
+  faqs={faqs}
+  faqTitle="Prompt caching FAQ"
+>
+  <article class="prose">
+    <h2>What is prompt caching?</h2>
+    <p>
+      LLM providers can remember the internal state of tokens they have already processed.
+      When your next request starts with the <strong>exact same prefix</strong> — a system
+      prompt, a codebase file, a long product catalog — the model skips recomputing it and
+      bills those tokens at a steep discount. Same answer quality, fraction of the cost,
+      faster time-to-first-token too.
+    </p>
+    <div class="callout">
+      <strong>The golden rule</strong>
+      Caching matches by prefix, not by content anywhere in the prompt. Put stable content
+      first (system instructions, reference docs) and variable content last (the user's
+      actual question). One changed token early in the prompt invalidates everything after it.
+    </div>
+
+    <h2>Provider-by-provider</h2>
+    <h3>OpenAI (GPT-4o, o-series)</h3>
+    <p>
+      Automatic — no code changes. Requests longer than 1,024 tokens are cached when the
+      prefix repeats; cached input costs <strong>50% of base input</strong> ($1.25/M instead
+      of $2.50/M on GPT-4o). Cache hits survive 5–10 minutes of idle traffic, longer during
+      off-peak hours.
+    </p>
+    <h3>Anthropic (Claude)</h3>
+    <p>
+      Explicit — mark breakpoints with <code>cache_control</code>. Cache <em>writes</em> cost
+      25% extra once; cache <em>reads</em> cost about <strong>10% of base input</strong>.
+      Default TTL is 5 minutes, refreshable on each hit; a 1-hour TTL costs double to write.
+      Ideal for long agent sessions and RAG pipelines.
+    </p>
+    <h3>Google (Gemini)</h3>
+    <p>
+      Explicit via the context caching API. You create a cached content object (minimum
+      4,096 tokens), pay a per-hour storage fee, then read it at roughly
+      <strong>25% of base input</strong>. Best for very large, stable corpora queried many
+      times per hour.
+    </p>
+    <h3>DeepSeek</h3>
+    <p>
+      Fully automatic with a tiny 64-token minimum. Cache hits cost about
+      <strong>one-tenth of base input</strong>, making DeepSeek one of the cheapest options
+      for repetitive workloads even before its low base prices.
+    </p>
+
+    <h2>A worked example</h2>
+    <p>
+      Say your app sends a fixed 8,000-token system + document prompt with every user
+      question, at 1,000 requests/day, on GPT-4o:
+    </p>
+    <ul>
+      <li><strong>Without cache:</strong> 8,000 × 1,000 × $2.50/M ≈ <code>$20/day</code> just for input.</li>
+      <li><strong>With ~80% cache hits:</strong> 200 misses × $0.02 + 800 hits × $0.01 ≈ <code>$12/day</code>.</li>
+      <li><strong>On Claude with 90%-off reads:</strong> the same pattern drops input spend by nearly half again.</li>
+    </ul>
+    <p>
+      Run your own numbers with the cache-hit slider in the
+      <a href="/">AITokenCalculator calculator</a> — advanced options include cache hit rate, batch
+      mode and reasoning effort.
+    </p>
+
+    <h2>Checklist to start saving today</h2>
+    <ol>
+      <li>Move all static content to the front of your prompt.</li>
+      <li>Keep prefixes byte-identical — no timestamps or random IDs inside them.</li>
+      <li>Reuse one client/connection where possible; routing across pools can miss caches.</li>
+      <li>Track the provider's cached-token metric in API responses to verify hits.</li>
+      <li>Benchmark before/after with our <a href="/guides/reduce-llm-api-costs/">cost-reduction playbook</a>.</li>
+    </ol>
+  </article>
+</PageShell>

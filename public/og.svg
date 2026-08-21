@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <filter id="blur" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="130"/>
+    </filter>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <g filter="url(#blur)">
+    <ellipse cx="220" cy="140" rx="380" ry="240" fill="#007cf0" opacity="0.35"/>
+    <ellipse cx="520" cy="90" rx="320" ry="210" fill="#00dfd8" opacity="0.32"/>
+    <ellipse cx="820" cy="150" rx="340" ry="230" fill="#7928ca" opacity="0.28"/>
+    <ellipse cx="1080" cy="110" rx="300" ry="210" fill="#ff0080" opacity="0.26"/>
+  </g>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#fade)"/>
+  <rect x="80" y="120" width="56" height="56" rx="14" fill="#171717"/>
+  <rect x="90" y="130" width="36" height="36" rx="10" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="99" cy="139" r="3.4" fill="#fff"/><circle cx="117" cy="139" r="3.4" fill="#fff"/>
+  <circle cx="99" cy="157" r="3.4" fill="#fff"/><circle cx="117" cy="157" r="3.4" fill="#fff"/>
+  <text x="152" y="158" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="600" fill="#171717">AITokenCalculator</text>
+  <text x="80" y="330" font-family="Segoe UI, Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-3" fill="#171717">AI Token &amp; Cost Calculator</text>
+  <text x="80" y="400" font-family="Segoe UI, Arial, sans-serif" font-size="30" fill="#4d4d4d">Estimate tokens and API cost across OpenAI, Claude, Gemini,</text>
+  <text x="80" y="444" font-family="Segoe UI, Arial, sans-serif" font-size="30" fill="#4d4d4d">Mistral, Llama, Grok, DeepSeek and more — free, instant.</text>
+  <rect x="80" y="500" width="360" height="58" rx="29" fill="#171717"/>
+  <text x="260" y="538" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600" fill="#ffffff">Calculate your cost →</text>
+</svg>

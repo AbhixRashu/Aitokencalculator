@@ -42,7 +42,7 @@
   --r-xl: 16px;
   --r-pill: 100px;
 
-  --font: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  --font: 'Geist Sans', 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
   --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --page: 1280px;
@@ -698,3 +698,146 @@ input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+/* ============================================================
+ * SEO content section + FAQ + footer nav
+ * ============================================================ */
+.seo-content {
+  border-top: 1px solid var(--hairline);
+  background: var(--canvas-soft);
+  padding: 72px 24px;
+}
+.seo-inner { max-width: 860px; margin: 0 auto; }
+.seo-inner > h2 {
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+.seo-inner > p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--body);
+  margin: 0 0 32px;
+}
+.seo-inner a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+.seo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.seo-card {
+  background: var(--canvas);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-2);
+  padding: 22px 24px;
+}
+.seo-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.seo-card p { font-size: 14px; line-height: 1.6; color: var(--body); margin: 0; }
+.faq-list { display: grid; gap: 10px; }
+details.faq {
+  background: var(--canvas);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-1);
+  padding: 16px 20px;
+}
+details.faq summary {
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--ink);
+  list-style-position: outside;
+}
+details.faq p {
+  margin: 10px 0 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--body);
+}
+.seo-more { margin-top: 28px !important; font-size: 15px; }
+.footer .foot-nav {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.footer .foot-nav a { color: var(--body); text-decoration: none; font-size: 13.5px; }
+.footer .foot-nav a:hover { color: var(--link); }
+@media (max-width: 720px) {
+  .seo-grid { grid-template-columns: 1fr; }
+  .seo-content { padding: 48px 16px; }
+}
+
+/* Price verified badge */
+.price-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--canvas-soft);
+  border-radius: var(--r-pill);
+  padding: 5px 12px;
+  box-shadow: var(--shadow-1);
+  white-space: nowrap;
+}
+.price-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan-deep);
+  flex: none;
+}
+@media (max-width: 720px) { .price-badge { display: none; } }
+
+/* Provider logos in compare/ranking cards */
+.cc-logo {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex: none;
+  object-fit: contain;
+}
+.cc .cc-name .cc-logo { width: 18px; height: 18px; }
+.rank-row .cc-logo { width: 16px; height: 16px; }
+
+/* ============================================================
+ * Animations — scroll reveal, tab transitions, FAQ accordion
+ * ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .rv {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity .6s cubic-bezier(.22, 1, .36, 1),
+      transform .6s cubic-bezier(.22, 1, .36, 1);
+    transition-delay: var(--rd, 0s);
+    will-change: opacity, transform;
+  }
+  .rv.rv-in { opacity: 1; transform: none; }
+}
+
+/* richer tab-switch transition (was plain fadeIn .18s) */
+@keyframes paneIn {
+  from { opacity: 0; transform: translateY(8px) scale(.995); }
+  to   { opacity: 1; transform: none; }
+}
+.tab-pane { display: none; }
+.tab-pane.active { display: block; animation: paneIn .28s cubic-bezier(.22, 1, .36, 1); }
+
+/* smooth FAQ accordions where supported (Chrome 129+), instant elsewhere */
+html { interpolate-size: allow-keywords; }
+details.faq::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition: block-size .32s ease, content-visibility .32s allow-discrete;
+}
+details.faq[open]::details-content { block-size: auto; }
+details.faq summary { list-style-position: outside; transition: color .15s ease; }
+details.faq summary:hover { color: var(--link); }

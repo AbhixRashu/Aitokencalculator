@@ -1,0 +1,81 @@
+---
+import PageShell from '../../components/PageShell.astro';
+
+const title = 'AI Token & Cost Guides — Learn to Estimate, Cache and Save';
+const description =
+  'Practical guides on AI tokens and LLM costs: what tokens are, how prompt caching works, ten ways to reduce API spend, and a full context window comparison across 51 models.';
+
+const published = '2026-08-21T00:00:00Z';
+
+const guides = [
+  {
+    href: '/guides/what-are-ai-tokens/',
+    eyebrow: 'Basics',
+    name: 'What Are AI Tokens?',
+    desc: 'Tokens explained: chunking, words-to-tokens conversion, context windows and why every API bill is counted in tokens.'
+  },
+  {
+    href: '/guides/prompt-caching/',
+    eyebrow: 'Cost optimization',
+    name: 'Prompt Caching Guide',
+    desc: 'How OpenAI, Anthropic, Google and DeepSeek cache prompts — writes, reads, TTLs — and how to save 50–90% on repeated input.'
+  },
+  {
+    href: '/guides/reduce-llm-api-costs/',
+    eyebrow: 'Cost optimization',
+    name: '10 Ways to Reduce LLM API Costs',
+    desc: 'Model right-sizing, batching, output caps, history trimming and more — ranked by effort-to-savings ratio.'
+  },
+  {
+    href: '/guides/context-window-comparison/',
+    eyebrow: 'Reference',
+    name: 'Context Window Comparison',
+    desc: 'All 51 supported models ranked by context size, with approximations for words, pages and codebases that fit inside.'
+  }
+];
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path="/guides/"
+  publishedTime={published}
+  modifiedTime={published}
+  eyebrow="Guides"
+  heading="AI Token &amp; Cost Guides"
+  lead="Short, practical explainers on how AI models count tokens, how pricing works, and where teams quietly overspend. Written for developers shipping on LLM APIs."
+>
+  <section class="guide-grid" aria-label="All guides">
+    {guides.map((g) => (
+      <a class="guide-card" href={g.href}>
+        <span class="eyebrow">{g.eyebrow}</span>
+        <h2>{g.name}</h2>
+        <p>{g.desc}</p>
+        <span class="gc-more">Read guide →</span>
+      </a>
+    ))}
+  </section>
+</PageShell>
+
+<style>
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 860px;
+  }
+  .guide-card {
+    display: block;
+    background: var(--canvas);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-2);
+    padding: 24px;
+    text-decoration: none;
+    transition: box-shadow .15s ease, transform .15s ease;
+  }
+  .guide-card:hover { box-shadow: var(--shadow-4); transform: translateY(-2px); }
+  .guide-card h2 { font-size: 18px; font-weight: 600; color: var(--ink); margin: 8px 0; letter-spacing: -0.01em; }
+  .guide-card p { font-size: 14px; line-height: 1.6; color: var(--body); margin: 0 0 14px; }
+  .gc-more { font-size: 13px; font-weight: 500; color: var(--link); }
+  @media (max-width: 720px) { .guide-grid { grid-template-columns: 1fr; } }
+</style>

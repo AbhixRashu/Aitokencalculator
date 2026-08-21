@@ -1,0 +1,189 @@
+---
+import '../../styles/style.css';
+import '../../styles/content.css';
+import SEOHead from '../../components/SEOHead.astro';
+
+const title = 'What Are AI Tokens? Token Counting Explained (With Calculator)';
+const description =
+  'Tokens are the units AI models read and bill by. Learn what a token is, how tokens convert to words and characters, why token counts affect cost and context limits, and how to estimate tokens for any prompt — free tool included.';
+
+const published = '2026-08-21T00:00:00Z';
+
+const faqs = [
+  {
+    q: 'How many words is 1,000 tokens?',
+    a: 'For English text, 1,000 tokens ≈ 750 words (about 1⅓ tokens per word). The exact ratio varies with vocabulary, formatting and language — code runs ~2.5 characters per token, while CJK languages can take 1.5 characters or fewer.'
+  },
+  {
+    q: 'How do I calculate tokens from characters?',
+    a: 'Divide character count by the model\'s average characters-per-token: ~4 for English with OpenAI/GPT tokenizers, ~3.7 for Gemini, ~4 for Claude and Llama. Our free token calculator does this instantly for any pasted text.'
+  },
+  {
+    q: 'Do I pay for both input and output tokens?',
+    a: 'Yes. Every API call bills input tokens (your prompt) and output tokens (the reply) at different rates — output is typically 3–5× more expensive. Multi-turn chats re-send earlier turns as input each time, so costs grow quadratically without caching.'
+  },
+  {
+    q: 'What happens if my prompt exceeds the context window?',
+    a: 'The request fails or gets truncated. Context windows range from 8K tokens on small legacy models to 1M+ on Gemini-class models. Staying within limits — and pricing tiers — matters because some providers charge more above certain context thresholds.'
+  },
+  {
+    q: 'Is there a free token counter?',
+    a: 'Yes — AITokenCalculator estimates tokens and cost for 51 models across nine providers, including image, audio and multi-turn chat workloads. No signup required.'
+  }
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+    author: { '@type': 'Organization', name: 'AITokenCalculator' },
+    publisher: { '@type': 'Organization', name: 'AITokenCalculator' },
+    mainEntityOfPage: new URL('/guides/what-are-ai-tokens/', Astro.site).href
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'AITokenCalculator', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Guides' },
+      { '@type': 'ListItem', position: 3, name: 'What Are AI Tokens?' }
+    ]
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  }
+];
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <SEOHead title={title} description={description} path="/guides/what-are-ai-tokens/" type="article" jsonLd={jsonLd} publishedTime={published} modifiedTime={published} />
+</head>
+<body>
+  <div class="page-wrap">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">AITokenCalculator</a><span>/</span><a href="/models/">Guides</a><span>/</span><span>What are AI tokens?</span>
+    </nav>
+
+    <header class="page-head">
+      <span class="eyebrow">Guide · Token Basics</span>
+      <h1>What Are AI Tokens? And Why They Decide Your API Bill</h1>
+      <p class="lead">
+        Every AI model — GPT-4o, Claude, Gemini, Llama — reads text as <strong>tokens</strong>,
+        thinks in tokens, and bills you per token. Understanding them is the fastest way to cut
+        your AI costs.
+      </p>
+    </header>
+
+    <article class="prose">
+      <h2>A token is a chunk of text</h2>
+      <p>
+        Language models don't see letters or words — they see <strong>tokens</strong>: short
+        chunks of text produced by a tokenizer. A token might be a whole common word like
+        <code>hello</code>, half of a longer word like <code>understand</code> →
+        <code>under</code> + <code>stand</code>, a piece of punctuation, or a few characters of
+        code. Each token maps to an ID the model was trained on.
+      </p>
+      <p>
+        For everyday English the rule of thumb is simple:
+      </p>
+      <ul>
+        <li><strong>1 token ≈ 4 characters</strong> ≈ ¾ of a word</li>
+        <li><strong>100 tokens ≈ 75 words</strong> ≈ half a page of text</li>
+        <li><strong>Code:</strong> roughly 2.5 characters per token (denser)</li>
+        <li><strong>CJK languages (Chinese/Japanese/Korean):</strong> often 1–1.5 characters per token</li>
+      </ul>
+
+      <h2>Why tokens matter: cost</h2>
+      <p>
+        APIs charge separately for <strong>input tokens</strong> (what you send) and
+        <strong>output tokens</strong> (what the model replies), and output usually costs
+        3–5× more. A GPT-4o call with 10K input and 2K output tokens costs about
+        <code>$0.045</code>. Run that 1,000 times a day and you're near <code>$1,350/month</code>.
+      </p>
+      <div class="callout">
+        <strong>The multi-turn trap</strong>
+        In a chat, every turn re-sends the full conversation history as input. A 20-turn chat
+        doesn't bill 20 messages — it bills their sum over and over. This is why long chats get
+        expensive fast, and why prompt caching (50–90% off repeated input) matters so much.
+      </div>
+
+      <h2>Why tokens matter: context windows</h2>
+      <p>
+        Every model has a maximum context window — from 8K tokens on legacy models to 1M+ on
+        Gemini-class flagships. Your system prompt, conversation history, retrieved documents
+        and the reply all share that budget. Exceed it and the request fails or truncates.
+      </p>
+
+      <h2>How to count tokens</h2>
+      <ol>
+        <li><strong>Exact:</strong> use the provider's own tokenizer library (<code>tiktoken</code> for OpenAI, <code>countTokens</code> for Gemini).</li>
+        <li><strong>Fast estimate:</strong> divide characters by ~4 (English) or use our calculator's character-density method across Latin, CJK, code and more.</li>
+        <li><strong>Plan budgets:</strong> multiply estimated tokens by the model's per-million price — including cache discounts and batch mode.</li>
+      </ol>
+
+      <h2>Five ways to spend fewer tokens</h2>
+      <ul>
+        <li><strong>Prompt caching</strong> — repeated system prompts cost 50–90% less on cache hits.</li>
+        <li><strong>Batch mode</strong> — async workloads get −50% on OpenAI-compatible APIs.</li>
+        <li><strong>Right-size the model</strong> — mini/flash classes handle routine tasks at 5–30× lower cost.</li>
+        <li><strong>Trim history</strong> — summarize old turns instead of resending them verbatim.</li>
+        <li><strong>Cap output</strong> — set max output tokens; replies are the expensive side.</li>
+      </ul>
+
+      <h2>Estimate your tokens free</h2>
+      <p>
+        Paste any text into <a href="/">AITokenCalculator's free token calculator</a> to see instant
+        token counts and dollar costs across
+        <a href="/models/">51 models from nine providers</a> — including images, audio and
+        multi-turn conversations.
+      </p>
+    </article>
+
+    <section class="faq-section" aria-labelledby="faq-h">
+      <h2 id="faq-h">Token counting FAQ</h2>
+      {faqs.map((f) => (
+        <div class="faq-item">
+          <h3>{f.q}</h3>
+          <p>{f.a}</p>
+        </div>
+      ))}
+    </section>
+
+    <aside class="cta-band">
+      <div>
+        <h2>Try the free calculator</h2>
+        <p>Tokens + cost across 51 models, instant results.</p>
+      </div>
+      <a class="btn-light" href="/">Calculate now →</a>
+    </aside>
+  </div>
+
+  <footer class="page-footer">
+    <nav aria-label="Site">
+      <a href="/">Token calculator</a>
+      <a href="/models/">Model pricing</a>
+      <a href="/guides/">Guides</a>
+      <a href="/guides/prompt-caching/">Prompt caching</a>
+      <a href="/guides/context-window-comparison/">Context windows</a>
+    </nav>
+    <p>Token counts are estimates. Always verify against official provider pricing.</p>
+  </footer>
+</body>
+</html>

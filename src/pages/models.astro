@@ -1,0 +1,211 @@
+---
+import '../styles/style.css';
+import { ClientRouter } from 'astro:transitions';
+import '../styles/content.css';
+import SEOHead from '../components/SEOHead.astro';
+import { MODELS, PROVIDERS } from '../scripts/models.js';
+import { COMPARISONS } from '../data/comparisons.js';
+
+const comparisons = COMPARISONS.map(({ a, b, note }) => {
+  const A = MODELS[a], B = MODELS[b];
+  return {
+    slug: `${a}-vs-${b}`,
+    label: `${A.name} vs ${B.name}`,
+    focus: note.split('.')[0] + '.'
+  };
+});
+
+const title = 'AI Model Pricing (2026) — Compare LLM API Costs per Million Tokens';
+const description =
+  'Live-updated pricing for 51 AI models: GPT-4o, o3, Claude Opus & Sonnet, Gemini 2.5, Mistral, Llama, Grok, DeepSeek and Kimi. Input/output cost per million tokens, context windows, cache pricing and batch discounts — all in one table.';
+
+const UPDATED = 'August 20, 2026';
+
+const byProvider = {};
+for (const m of Object.values(MODELS)) {
+  (byProvider[m.provider] ??= []).push(m);
+}
+const providerOrder = Object.keys(PROVIDERS).filter((p) => byProvider[p]?.length);
+
+const fmt = (v) => (v == null ? '—' : `$${Number(v) % 1 === 0 ? Number(v) : Number(v).toFixed(2)} / M`);
+const fmtCtx = (n) => (n >= 1000 ? `${Math.round(n / 1000)}K` : `${n}`);
+
+const faqs = [
+  {
+    q: 'Which AI model is the cheapest per token?',
+    a: 'As of August 2026, GPT-4o mini ($0.15 input / $0.60 output per million tokens), Gemini Flash-class models and DeepSeek are the cheapest frontier-quality options. Open-weight models served through providers like Together AI often undercut even those prices.'
+  },
+  {
+    q: 'How much does GPT-4o cost?',
+    a: 'GPT-4o costs $2.50 per million input tokens and $10.00 per million output tokens. Cached input costs $1.25/M and batch mode halves both rates to $1.25 / $5.00.'
+  },
+  {
+    q: 'How much does Claude cost?',
+    a: 'Anthropic Claude pricing spans from Haiku-class models (from $0.80/M input) to Opus-class flagship models ($15/M input, $75/M output). Prompt caching writes cost more than base input; cache reads cost roughly 10% of base input.'
+  },
+  {
+    q: 'What does "per million tokens" mean?',
+    a: 'LLM APIs bill per token — a token is roughly 4 characters or ¾ of an English word. Prices in this table are USD per 1,000,000 tokens, so $2.50/M means about $0.0000025 per token.'
+  },
+  {
+    q: 'Is cached input cheaper than regular input?',
+    a: 'Yes. Every major provider discounts cached prompt tokens heavily — typically 50–90% off base input price. If your app sends the same long system prompt repeatedly, caching is the single biggest cost saver.'
+  },
+  {
+    q: 'Are these prices official?',
+    a: `Prices were last verified against each provider's official pricing page on ${UPDATED}. Providers change prices frequently — always confirm on the official page before committing to a budget. AITokenCalculator is an estimator, not a billing source.`
+  }
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'AITokenCalculator', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'AI Model Pricing' }
+    ]
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'AI model API pricing comparison',
+    numberOfItems: Object.keys(MODELS).length,
+    itemListElement: Object.values(MODELS).map((m, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: `${m.name} (${PROVIDERS[m.provider].name}) pricing`
+    }))
+  }
+];
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <ClientRouter />
+  <SEOHead title={title} description={description} path="/models/" jsonLd={jsonLd} modifiedTime="2026-08-20T00:00:00Z" />
+</head>
+<body>
+  <div class="page-wrap">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">AITokenCalculator</a><span>/</span><span>Model Pricing</span>
+    </nav>
+
+    <header class="page-head">
+      <span class="eyebrow">Pricing Reference · Updated {UPDATED}</span>
+      <h1>AI Model Pricing — 51 LLMs Compared</h1>
+      <p class="lead">
+        Complete API price reference for every major AI model: OpenAI GPT-4o and o-series,
+        Anthropic Claude, Google Gemini, Mistral, Meta Llama, xAI Grok, DeepSeek, MiniMax and
+        Moonshot Kimi. All prices are <strong>USD per million tokens</strong>, with context
+        windows, prompt-cache rates and batch discounts included.
+      </p>
+      <span class="updated-pill">Prices verified {UPDATED}</span>
+    </header>
+
+    {providerOrder.map((pKey) => (
+      <section class="provider-section" aria-labelledby={`prov-${pKey}`}>
+        <div class="provider-head">
+          <img src={PROVIDERS[pKey].icon} alt="" width="26" height="26" loading="lazy" />
+          <h2 id={`prov-${pKey}`}>{PROVIDERS[pKey].name} API pricing</h2>
+          <span class="p-count">{byProvider[pKey].length} models</span>
+        </div>
+        <div class="table-card">
+          <table class="pricing">
+            <thead>
+              <tr>
+                <th scope="col">Model</th>
+                <th scope="col">Input / M</th>
+                <th scope="col">Output / M</th>
+                <th scope="col">Cache read</th>
+                <th scope="col">Context</th>
+                <th scope="col">Batch</th>
+              </tr>
+            </thead>
+            <tbody>
+              {byProvider[pKey].map((m) => (
+                <tr>
+                  <td>
+                    <a class="model-name vs-link" href={`/models/${m.id}/`}>{m.name}</a>
+                    {m.vision && <span class="tag vision">vision</span>}
+                    {m.reasoning && <span class="tag reasoning">reasoning</span>}
+                    {m.audio && <span class="tag audio">audio</span>}
+                    <span class="model-id">{m.id}</span>
+                  </td>
+                  <td class="num">{fmt(m.in)}</td>
+                  <td class="num">{fmt(m.out)}</td>
+                  <td class="num">{fmt(m.cacheRead)}</td>
+                  <td class="num">{fmtCtx(m.contextWindow)}</td>
+                  <td class="num">{m.batchSupported ? `−${Math.round((1 - m.batchDiscount) * 100)}%` : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))}
+
+    <section class="provider-section" aria-labelledby="vs-h">
+      <div class="provider-head">
+        <h2 id="vs-h">Popular model comparisons</h2>
+      </div>
+      <div class="table-card">
+        <table class="pricing">
+          <thead>
+            <tr><th scope="col">Matchup</th><th scope="col">Focus</th></tr>
+          </thead>
+          <tbody>
+            {comparisons.map((c) => (
+              <tr>
+                <td><a class="model-name vs-link" href={`/vs/${c.slug}/`}>{c.label}</a></td>
+                <td>{c.focus}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-labelledby="faq-h">
+      <h2 id="faq-h">AI pricing FAQ</h2>
+      {faqs.map((f) => (
+        <div class="faq-item">
+          <h3>{f.q}</h3>
+          <p>{f.a}</p>
+        </div>
+      ))}
+    </section>
+
+    <aside class="cta-band">
+      <div>
+        <h2>Not sure what your workload costs?</h2>
+        <p>Run your real numbers through the free calculator.</p>
+      </div>
+      <a class="btn-light" href="/">Open the calculator →</a>
+    </aside>
+  </div>
+
+  <footer class="page-footer">
+    <nav aria-label="Site">
+      <a href="/">Token calculator</a>
+      <a href="/models/">Model pricing</a>
+      <a href="/guides/">Guides</a>
+      <a href="/guides/what-are-ai-tokens/">What are AI tokens?</a>
+      <a href="/guides/prompt-caching/">Prompt caching</a>
+    </nav>
+    <p>Token counts are estimates. Always verify against official provider pricing.</p>
+  </footer>
+</body>
+</html>

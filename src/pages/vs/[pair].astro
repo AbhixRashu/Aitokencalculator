@@ -1,0 +1,403 @@
+---
+import PageShell from '../../components/PageShell.astro';
+import { COMPARISONS } from '../../data/comparisons.js';
+import { MODELS, PROVIDERS, getModel, formatMoney } from '../../scripts/models.js';
+import { Calculator } from '../../scripts/calculator.js';
+
+export function getStaticPaths() {
+  return COMPARISONS.map(({ a, b }) => ({
+    params: { pair: `${a}-vs-${b}` },
+    props: { a, b }
+  }));
+}
+
+const { a, b } = Astro.props;
+const A = getModel(a);
+const B = getModel(b);
+if (!A || !B) throw new Error(`Unknown model in comparison: ${a} / ${b}`);
+
+const meta = COMPARISONS.find((c) => c.a === a && c.b === b);
+const nameA = A.name;
+const nameB = B.name;
+
+const title = `${nameA} vs ${nameB} — Pricing & Cost Comparison (2026)`;
+const description = `${nameA} vs ${nameB}: input/output price per million tokens, cache rates, context windows and real workload cost scenarios. See which model is cheaper for your exact usage.`;
+
+/* == head-to-head numbers == */
+const fmtP = (v) => (v == null ? '—' : `$${Number(v) % 1 === 0 ? Number(v) : Number(v).toFixed(2)}`);
+const fmtCtx = (n) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}M` : `${Math.round(n / 1000)}K`);
+const yesNo = (v) => (v ? 'Yes' : '—');
+
+const cheaperIn = A.in <= B.in ? A : B;
+const cheaperOut = A.out <= B.out ? A : B;
+const biggerCtx = A.contextWindow >= B.contextWindow ? A : B;
+const outRatio = (Math.max(A.out, B.out) / Math.min(A.out, B.out));
+const inRatio = (Math.max(A.in, B.in) / Math.min(A.in, B.in));
+
+/* == static cost scenarios via the real calculator == */
+const opts = { batch: false, reasoningEffort: 'medium', cacheHitRate: 0 };
+const scenario = (inp, out) => ({
+  inp, out,
+  a: Calculator.calculateFullCost({ input: inp, output: out }, A, opts),
+  b: Calculator.calculateFullCost({ input: inp, output: out }, B, opts)
+});
+const scenarios = [
+  scenario(1_000, 300),
+  scenario(10_000, 2_000),
+  scenario(100_000, 20_000)
+];
+const std = scenarios[1];
+const stdCheaper = std.a.total <= std.b.total ? 'a' : 'b';
+const stdOther = stdCheaper === 'a' ? 'b' : 'a';
+const stdWinner = stdCheaper === 'a' ? A : B;
+const stdLoser = stdCheaper === 'a' ? B : A;
+const monthlyWinner = (stdCheaper === 'a' ? std.a.total : std.b.total) * 1000 * 30.4375;
+
+/* == chart payload (rendered client-side with Chart.js) == */
+const chartData = {
+  labels: ['Light · 1K/300', 'Standard · 10K/2K', 'Heavy · 100K/20K'],
+  datasets: [
+    { label: nameA, color: PROVIDERS[A.provider].color, data: scenarios.map(s => +s.a.total.toFixed(6)) },
+    { label: nameB, color: PROVIDERS[B.provider].color, data: scenarios.map(s => +s.b.total.toFixed(6)) }
+  ]
+};
+
+/* == FAQ strings built with plain concatenation — the Astro compiler
+ * mis-parses template literals that interpolate two `x / y`
+ * expressions in one literal, so we avoid that construct here. */
+const inK = Math.round(std.inp / 1000);
+const outK = Math.round(std.out / 1000);
+const ctxBig = fmtCtx(biggerCtx.contextWindow);
+const wordsBig = Math.round(biggerCtx.contextWindow * 0.75).toLocaleString('en-US');
+const nameOtherCtx = biggerCtx === A ? nameB : nameA;
+const ctxOther = fmtCtx(biggerCtx === A ? B.contextWindow : A.contextWindow);
+
+const faqs = [
+  {
+    q: 'Which is cheaper, ' + nameA + ' or ' + nameB + '?',
+    a: stdWinner.name + ' is cheaper for a typical workload (' + inK + 'K input / ' + outK +
+      'K output tokens): ' + formatMoney(std[stdCheaper].total, 'USD') + ' vs ' +
+      formatMoney(std[stdOther].total, 'USD') + ' per call for ' + stdWinner.name +
+      ' and ' + stdLoser.name + ' respectively.'
+  },
+  {
+    q: 'How do ' + nameA + ' and ' + nameB + ' prices compare per million tokens?',
+    a: nameA + ' costs $' + A.in + '/M input and $' + A.out + '/M output; ' + nameB +
+      ' costs $' + B.in + '/M input and $' + B.out + '/M output. Output prices differ by about ' +
+      outRatio.toFixed(1) + 'x between the two.'
+  },
+  {
+    q: 'Which has the bigger context window?',
+    a: biggerCtx.name + ' leads with ' + ctxBig + ' tokens (~' + wordsBig + ' words). ' +
+      nameOtherCtx + ' offers ' + ctxOther + ' tokens.'
+  },
+  {
+    q: 'Should I switch from ' + stdLoser.name + ' to ' + stdWinner.name + '?',
+    a: meta?.note || ('If cost is the deciding factor at your volume, ' + stdWinner.name +
+      ' saves money on this workload — but weigh quality, latency and ecosystem before switching. Run both on your own evals first.')
+  }
+];
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: '2026-08-21T00:00:00Z',
+  dateModified: '2026-08-21T00:00:00Z',
+  author: { '@type': 'Organization', name: 'AITokenCalculator' },
+  publisher: { '@type': 'Organization', name: 'AITokenCalculator' },
+  mainEntityOfPage: new URL(`/vs/${a}-vs-${b}/`, Astro.site).href
+}];
+---
+
+<PageShell
+  title={title}
+  description={description}
+  path={`/vs/${a}-vs-${b}/`}
+  type="article"
+  publishedTime="2026-08-21T00:00:00Z"
+  modifiedTime="2026-08-21T00:00:00Z"
+  eyebrow="Comparison · Pricing"
+  heading={`${nameA} vs ${nameB}`}
+  lead={`Head-to-head API pricing, caching, context windows and real workload math — so you can pick the right model instead of the familiar one.`}
+  updatedLabel="Prices verified August 20, 2026"
+  faqs={faqs}
+  faqTitle={`${nameA} vs ${nameB} FAQ`}
+  jsonLd={jsonLd}
+>
+  <script is:inline defer src="/vendor/chart.umd.min.js"></script>
+
+  <!-- == DUEL HERO == -->
+  <section class="duel" aria-label="Head-to-head summary">
+    <div class:list={['duel-card', { 'duel-win': stdCheaper === 'a' }]}>
+      <span class="duel-win-tag" style={`display:${stdCheaper === 'a' ? '' : 'none'}`}>Cheaper overall</span>
+      <img class="duel-logo" src={PROVIDERS[A.provider].icon} alt="" width="44" height="44" />
+      <div class="duel-name">{nameA}</div>
+      <div class="duel-provider">{PROVIDERS[A.provider].name}</div>
+      <dl class="duel-stats">
+        <div><dt>Input</dt><dd>{fmtP(A.in)} / M</dd></div>
+        <div><dt>Output</dt><dd>{fmtP(A.out)} / M</dd></div>
+        <div><dt>Cache read</dt><dd>{fmtP(A.cacheRead)}</dd></div>
+        <div><dt>Context</dt><dd>{fmtCtx(A.contextWindow)}</dd></div>
+      </dl>
+    </div>
+
+    <div class="duel-vs" aria-hidden="true">VS</div>
+
+    <div class:list={['duel-card', { 'duel-win': stdCheaper === 'b' }]}>
+      <span class="duel-win-tag" style={`display:${stdCheaper === 'b' ? '' : 'none'}`}>Cheaper overall</span>
+      <img class="duel-logo" src={PROVIDERS[B.provider].icon} alt="" width="44" height="44" />
+      <div class="duel-name">{nameB}</div>
+      <div class="duel-provider">{PROVIDERS[B.provider].name}</div>
+      <dl class="duel-stats">
+        <div><dt>Input</dt><dd>{fmtP(B.in)} / M</dd></div>
+        <div><dt>Output</dt><dd>{fmtP(B.out)} / M</dd></div>
+        <div><dt>Cache read</dt><dd>{fmtP(B.cacheRead)}</dd></div>
+        <div><dt>Context</dt><dd>{fmtCtx(B.contextWindow)}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- == LIVE CALCULATOR == -->
+  <section class="vs-live" id="vs-live" data-a={a} data-b={b} aria-label="Interactive cost calculator">
+    <div class="vl-head">
+      <h2>Live cost calculator</h2>
+      <p>Drag the numbers — costs update instantly for both models.</p>
+    </div>
+    <div class="vl-controls">
+      <label class="field"><span>Input tokens</span><input type="number" id="vl-in" min="0" value="10000" /></label>
+      <label class="field"><span>Output tokens</span><input type="number" id="vl-out" min="0" value="2000" /></label>
+      <label class="field"><span>Cache hit <output id="vl-cache-val" for="vl-cache">30%</output></span>
+        <input type="range" id="vl-cache" min="0" max="90" value="30" /></label>
+      <label class="field"><span>Requests / day</span><input type="number" id="vl-req" min="1" value="1000" /></label>
+    </div>
+    <div class="live-cards">
+      <div class="live-card" id="lc-a">
+        <div class="lc-head"><img src={PROVIDERS[A.provider].icon} alt="" width="18" height="18" />{nameA}<span class="live-badge" hidden>Cheaper</span></div>
+        <div class="lc-call" id="lca-call">—</div>
+        <div class="lc-month"><span id="lca-mo">—</span><small>/month</small></div>
+      </div>
+      <div class="live-divider" aria-hidden="true"></div>
+      <div class="live-card" id="lc-b">
+        <div class="lc-head"><img src={PROVIDERS[B.provider].icon} alt="" width="18" height="18" />{nameB}<span class="live-badge" hidden>Cheaper</span></div>
+        <div class="lc-call" id="lcb-call">—</div>
+        <div class="lc-month"><span id="lcb-mo">—</span><small>/month</small></div>
+      </div>
+    </div>
+    <div class="vl-meter" aria-hidden="true">
+      <div class="vl-seg" id="vl-meter-a"></div>
+      <div class="vl-seg alt" id="vl-meter-b"></div>
+    </div>
+    <div class="vl-meter-labels">
+      <span id="vl-label-a">—</span>
+      <span id="vl-label-b">—</span>
+    </div>
+    <p class="vl-savings" id="vl-savings"></p>
+  </section>
+
+  <article class="prose">
+    <script type="application/json" id="vs-chart-data" set:html={JSON.stringify(chartData)} />
+
+    <h2>Cost by workload size</h2>
+    <div class="chart-card-static">
+      <div class="chart-legend-static">
+        <span><i style={`background:${PROVIDERS[A.provider].color}`}></i>{nameA}</span>
+        <span><i style={`background:${PROVIDERS[B.provider].color}`}></i>{nameB}</span>
+      </div>
+      <div class="vs-chart-box"><canvas id="vs-chart" height="240"></canvas></div>
+    </div>
+
+    <h2>Price comparison</h2>
+    <div class="table-card">
+      <table class="pricing">
+        <thead>
+          <tr>
+            <th scope="col">Feature</th>
+            <th scope="col"><img class="th-logo" src={PROVIDERS[A.provider].icon} alt="" width="14" height="14" /> {nameA}</th>
+            <th scope="col"><img class="th-logo" src={PROVIDERS[B.provider].icon} alt="" width="14" height="14" /> {nameB}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Provider</td><td>{PROVIDERS[A.provider].name}</td><td>{PROVIDERS[B.provider].name}</td></tr>
+          <tr><td>Input / M tokens</td><td class="num">{fmtP(A.in)}</td><td class="num">{fmtP(B.in)}</td></tr>
+          <tr><td>Output / M tokens</td><td class="num">{fmtP(A.out)}</td><td class="num">{fmtP(B.out)}</td></tr>
+          <tr><td>Cached input read</td><td class="num">{fmtP(A.cacheRead)}</td><td class="num">{fmtP(B.cacheRead)}</td></tr>
+          <tr><td>Context window</td><td class="num">{fmtCtx(A.contextWindow)}</td><td class="num">{fmtCtx(B.contextWindow)}</td></tr>
+          <tr><td>Batch discount</td><td class="num">{A.batchSupported ? `−${Math.round((1 - A.batchDiscount) * 100)}%` : '—'}</td><td class="num">{B.batchSupported ? `−${Math.round((1 - B.batchDiscount) * 100)}%` : '—'}</td></tr>
+          <tr><td>Vision</td><td>{yesNo(A.vision)}</td><td>{yesNo(B.vision)}</td></tr>
+          <tr><td>Audio</td><td>{yesNo(A.audio)}</td><td>{yesNo(B.audio)}</td></tr>
+          <tr><td>Reasoning tokens</td><td>{A.reasoning ? 'Yes' : '—'}</td><td>{B.reasoning ? 'Yes' : '—'}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>What your workload actually costs</h2>
+    <p>
+      Prices per token hide the real picture. Here are three common workloads computed with
+      AITokenCalculator's own engine (medium reasoning effort, no batch, no cache):
+    </p>
+    <div class="table-card">
+      <table class="pricing">
+        <thead>
+          <tr>
+            <th scope="col">Workload</th>
+            <th scope="col">{nameA}</th>
+            <th scope="col">{nameB}</th>
+            <th scope="col">Cheaper</th>
+          </tr>
+        </thead>
+        <tbody>
+          {scenarios.map((s) => (
+            <tr>
+              <td>{s.inp.toLocaleString('en-US')} in / {s.out.toLocaleString('en-US')} out</td>
+              <td class="num">{formatMoney(s.a.total, 'USD')}</td>
+              <td class="num">{formatMoney(s.b.total, 'USD')}</td>
+              <td>{s.a.total <= s.b.total ? nameA : nameB}</td>
+            </tr>
+          ))}
+          <tr>
+            <td>Monthly @ 1,000 req/day (standard)</td>
+            <td class="num">{formatMoney(std.a.total * 1000 * 30.4375, 'USD')}</td>
+            <td class="num">{formatMoney(std.b.total * 1000 * 30.4375, 'USD')}</td>
+            <td>{std.a.total <= std.b.total ? nameA : nameB}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Analysis</h2>
+    <p>
+      On input price, {cheaperIn.name} wins at {fmtP(cheaperIn.in)}/M — roughly
+      {inRatio > 1.05 ? ` ${inRatio.toFixed(1)}× cheaper` : ' effectively tied'} than its rival.
+      Output tells a sharper story: {cheaperOut.name} charges {fmtP(cheaperOut.out)}/M
+      {outRatio > 1.05 ? `, about ${outRatio.toFixed(1)}× less than ${cheaperOut === A ? nameB : nameA}` : ', essentially matching its rival'}
+      — and output is where chatty and agentic workloads bleed money.
+    </p>
+    <p>
+      Context capacity differs too: {biggerCtx.name} fits {ctxBig} tokens
+      (~{wordsBig} words) versus
+      {ctxOther}. If you feed whole documents or
+      codebases, that gap decides feasibility before price even matters.
+    </p>
+    {meta?.note && <p>{meta.note}</p>}
+    <p>
+      Numbers shift as providers reprice — check the full
+      <a href="/models/">AI model pricing table</a>, then run your own prompt through the
+      <a href={`/?m=${a}&tab=manual&in=10000&out=2000`}>calculator preloaded with {nameA}</a> or
+      <a href={`/?m=${b}&tab=manual&in=10000&out=2000`}>with {nameB}</a>.
+    </p>
+  </article>
+
+  <script>
+    import { getModel, formatMoney } from '../../scripts/models.js';
+    import { Calculator } from '../../scripts/calculator.js';
+
+    function setupPage() {
+      const root = document.getElementById('vs-live');
+      if (!root) return;
+      const MA = getModel(root.dataset.a);
+      const MB = getModel(root.dataset.b);
+      const $ = (id) => document.getElementById(id);
+
+      const update = () => {
+        const input = Math.max(0, parseInt($('vl-in').value) || 0);
+        const output = Math.max(0, parseInt($('vl-out').value) || 0);
+        const cacheRate = (parseInt($('vl-cache').value) || 0) / 100;
+        const reqs = Math.max(1, parseInt($('vl-req').value) || 1);
+        $('vl-cache-val').textContent = $('vl-cache').value + '%';
+
+        const opts = { batch: false, reasoningEffort: 'medium', cacheHitRate: cacheRate };
+        const ra = Calculator.calculateFullCost({ input, output }, MA, opts);
+        const rb = Calculator.calculateFullCost({ input, output }, MB, opts);
+        const moA = ra.total * reqs * 30.4375;
+        const moB = rb.total * reqs * 30.4375;
+
+        $('lca-call').textContent = formatMoney(ra.total, 'USD');
+        $('lcb-call').textContent = formatMoney(rb.total, 'USD');
+        $('lca-mo').textContent = formatMoney(moA, 'USD');
+        $('lcb-mo').textContent = formatMoney(moB, 'USD');
+
+        /* animated savings meter */
+        const totalMo = moA + moB || 1;
+        const meterA = $('vl-meter-a');
+        if (meterA) {
+          meterA.style.width = (moA / totalMo * 100).toFixed(1) + '%';
+          $('vl-meter-b').style.width = (moB / totalMo * 100).toFixed(1) + '%';
+          $('vl-label-a').textContent = formatMoney(moA, 'USD');
+          $('vl-label-b').textContent = formatMoney(moB, 'USD');
+        }
+
+        const aWin = ra.total <= rb.total;
+        $('lc-a').classList.toggle('live-best', aWin);
+        $('lc-b').classList.toggle('live-best', !aWin);
+        $('lc-a').querySelector('.live-badge').hidden = !aWin;
+        $('lc-b').querySelector('.live-badge').hidden = aWin;
+
+        const saveMo = Math.abs(moA - moB);
+        const winner = aWin ? MA.name : MB.name;
+        $('vl-savings').textContent = saveMo > 0
+          ? winner + ' saves you ' + formatMoney(saveMo, 'USD') + '/month at this volume.'
+          : 'Dead heat at this workload — pick on quality and latency.';
+      };
+
+      ['vl-in', 'vl-out', 'vl-cache', 'vl-req'].forEach((id) => {
+        $(id).addEventListener('input', update);
+      });
+      update();
+    }
+
+    /* -- scenario bar chart -- */
+    let vsChart = null;
+    function drawChart() {
+      const canvas = document.getElementById('vs-chart');
+      const dataEl = document.getElementById('vs-chart-data');
+      if (!canvas || !dataEl || typeof window.Chart === 'undefined') return;
+      if (vsChart) { vsChart.destroy(); vsChart = null; }
+      const payload = JSON.parse(dataEl.textContent);
+      const css = getComputedStyle(document.documentElement);
+      const mute = css.getPropertyValue('--mute').trim() || '#888';
+      const line = css.getPropertyValue('--hairline').trim() || '#ebebeb';
+      const body = css.getPropertyValue('--body').trim() || '#4d4d4d';
+
+      vsChart = new window.Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: payload.labels,
+          datasets: payload.datasets.map((d) => ({
+            label: d.label,
+            data: d.data,
+            backgroundColor: d.color,
+            borderRadius: 5,
+            maxBarThickness: 46
+          }))
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 700, easing: 'easeOutQuart' },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: { label: (c) => c.dataset.label + ': $' + c.parsed.y }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: body, font: { size: 11 } }, border: { color: line } },
+            y: {
+              grid: { color: line }, border: { display: false },
+              ticks: { color: mute, font: { size: 11 }, callback: (v) => '$' + v }
+            }
+          }
+        }
+      });
+    }
+
+    /* Re-run on every Astro client-side navigation + first load. */
+    document.addEventListener('astro:page-load', () => {
+      setupPage();
+      setTimeout(drawChart, 60);
+    });
+  </script>
+</PageShell>
+</PageShell>

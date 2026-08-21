@@ -1,5 +1,58 @@
 ---
 import '../styles/style.css';
+import { ClientRouter } from 'astro:transitions';
+import SEOHead from '../components/SEOHead.astro';
+
+const title = 'AI Token & Cost Calculator — Free LLM API Estimator | AITokenCalculator';
+const description =
+  'Free AI token calculator for GPT-4o, Claude, Gemini, Mistral, Llama, Grok and DeepSeek. Count tokens from text, images, audio or chat and estimate API cost per model instantly — caching and batch discounts included.';
+
+const faqs = [
+  {
+    q: 'How do I calculate AI token cost?',
+    a: 'Paste your text into AITokenCalculator, pick a model, and enter expected output tokens. The calculator estimates input tokens from character density and multiplies by the model\'s per-million-token price — including prompt-cache discounts and batch mode.'
+  },
+  {
+    q: 'How many tokens is a word?',
+    a: 'For English, one word ≈ 1.3 tokens (about 4 characters per token). Code runs ~2.5 characters per token; Chinese, Japanese and Korean can take 1.5 characters or fewer per token.'
+  },
+  {
+    q: 'Which models does AITokenCalculator support?',
+    a: '51 models across nine providers: OpenAI (GPT-4o, o-series), Anthropic Claude, Google Gemini, Mistral, Meta Llama, xAI Grok, DeepSeek, MiniMax and Moonshot Kimi — with pricing verified against official sources.'
+  },
+  {
+    q: 'Is AITokenCalculator free?',
+    a: 'Yes. AITokenCalculator runs entirely in your browser — no signup, no API key, nothing sent to a server. Estimates only; always confirm final pricing with the provider.'
+  },
+  {
+    q: 'Does AITokenCalculator support image and audio pricing?',
+    a: 'Yes. The Media tab estimates image tokens using OpenAI\'s tiling math plus flat-rate models, audio cost per second, and combined multimodal workloads.'
+  }
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'AITokenCalculator',
+    url: Astro.site?.href ?? 'https://tokencalc.app/',
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Web',
+    description,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    featureList:
+      'Token count estimation, API cost calculator, 51 AI models, image & audio token pricing, multi-turn chat cost projection, model comparison, batch & cache discounts'
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  }
+];
 ---
 
 <!DOCTYPE html>
@@ -7,17 +60,14 @@ import '../styles/style.css';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="TokenCalc — estimate AI token cost in seconds. OpenAI, Claude, Gemini, Mistral and Llama." />
-  <title>TokenCalc — AI Token &amp; Cost Calculator</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <ClientRouter />
+  <script is:inline defer src="/vendor/chart.umd.min.js"></script>
+  <SEOHead title={title} description={description} path="/" jsonLd={jsonLd} modifiedTime="2026-08-20T00:00:00Z" />
 </head>
 <body>
   <!-- ======================= NAV ======================= -->
   <header class="nav">
-    <a class="brand" href="/" aria-label="TokenCalc home">
+    <a class="brand" href="/" aria-label="AITokenCalculator home">
       <span class="logo" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="4" y="4" width="16" height="16" rx="4"></rect>
@@ -27,10 +77,10 @@ import '../styles/style.css';
           <circle cx="15" cy="15" r="1.4"></circle>
         </svg>
       </span>
-      <span class="brand-name">TokenCalc</span>
+      <span class="brand-name">AITokenCalculator</span>
     </a>
     <div class="nav-right">
-      <span class="nav-mono" id="nav-updated"></span>
+      <span class="nav-mono price-badge" id="nav-updated" title="Pricing verified against official provider pages"></span>
       <label class="nav-select" for="currency-select">
         <span class="sr-only">Currency</span>
         <select id="currency-select" title="Display currency">
@@ -290,9 +340,62 @@ import '../styles/style.css';
     </section>
   </main>
 
+  <!-- ======================= SEO CONTENT ======================= -->
+  <section class="seo-content" aria-label="About token cost estimation">
+    <div class="seo-inner">
+      <h2>Estimate AI API costs before you ship</h2>
+      <p>
+        AITokenCalculator is a <strong>free AI token calculator</strong> that estimates how many tokens
+        your prompt uses and what it costs across <a href="/models/">51 models from nine
+        providers</a> — OpenAI GPT-4o and o-series, Anthropic Claude, Google Gemini, Mistral,
+        Meta Llama, xAI Grok, DeepSeek, MiniMax and Moonshot Kimi. Paste text for an instant
+        count, switch to the Chat tab to see multi-turn context growth, or open the Media tab
+        for image and audio pricing. Everything runs in your browser.
+      </p>
+
+      <div class="seo-grid">
+        <div class="seo-card">
+          <h3>1 · Count tokens</h3>
+          <p>Paste text or upload a file — tokens estimated from character density tuned per tokenizer (English ≈ 4 chars/token).</p>
+        </div>
+        <div class="seo-card">
+          <h3>2 · Pick a model</h3>
+          <p>Compare input, output, cache and batch pricing side by side with verified rates.</p>
+        </div>
+        <div class="seo-card">
+          <h3>3 · Project monthly spend</h3>
+          <p>Enter daily request volume to see a full month of projected cost with cache-hit savings.</p>
+        </div>
+      </div>
+
+      <div class="faq-list">
+        {faqs.map((f) => (
+          <details class="faq">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+
+      <p class="seo-more">
+        New to tokens? Read <a href="/guides/what-are-ai-tokens/">what AI tokens are and how counting works</a>,
+        learn <a href="/guides/prompt-caching/">how prompt caching cuts input costs by up to 90%</a>, or browse the
+        full <a href="/models/">AI model pricing comparison</a>. More in our <a href="/guides/">guides library</a>.
+      </p>
+    </div>
+  </section>
+
   <!-- ======================= FOOTER ======================= -->
   <footer class="footer">
-    <span class="foot-eyebrow">TokenCalc</span>
+    <nav class="foot-nav" aria-label="Site">
+      <a href="/">Token calculator</a>
+      <a href="/models/">Model pricing</a>
+      <a href="/guides/">Guides</a>
+      <a href="/guides/what-are-ai-tokens/">What are AI tokens?</a>
+      <a href="/guides/prompt-caching/">Prompt caching</a>
+      <a href="/guides/reduce-llm-api-costs/">Reduce API costs</a>
+    </nav>
+    <span class="foot-eyebrow">AITokenCalculator</span>
     <p>Token counts are <strong>estimates</strong>. Prices last verified <span id="footer-updated"></span> — always check official pricing before committing to budgets.</p>
   </footer>
 
@@ -300,6 +403,7 @@ import '../styles/style.css';
 
   <script>
     import '../scripts/ui.js';
+    import '../scripts/reveal.js';
   </script>
 </body>
 </html>
