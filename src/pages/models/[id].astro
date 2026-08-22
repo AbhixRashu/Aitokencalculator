@@ -15,14 +15,14 @@ const { model: m } = Astro.props;
 const P = PROVIDERS[m.provider];
 const name = m.name;
 
-const title = `${name} Pricing & API Token Cost Calculator`;
-const description = `${name} API pricing: $${m.in}/M input, $${m.out}/M output. Context: ${fmtCtx(m.contextWindow)} tokens. Estimate your ${name} API costs and token usage free.`;
-
 /* == numbers == */
 const fmtP = (v) => (v == null ? '—' : `$${Number(v) % 1 === 0 ? Number(v) : Number(v).toFixed(2)}`);
 const fmtCtx = (n) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}M` : `${Math.round(n / 1000)}K`);
 const words = Math.round(m.contextWindow * 0.75);
 const pages = Math.round(words / 500);
+
+const title = `${name} Pricing & API Token Cost Calculator`;
+const description = `${name} API pricing: $${m.in}/M input, $${m.out}/M output. Context: ${fmtCtx(m.contextWindow)} tokens. Estimate your ${name} API costs and token usage free.`;
 
 /* == static scenarios via real engine == */
 const opts = { batch: false, reasoningEffort: 'medium', cacheHitRate: 0 };
