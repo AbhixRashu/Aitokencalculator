@@ -3,9 +3,9 @@ import '../styles/style.css';
 import { ClientRouter } from 'astro:transitions';
 import SEOHead from '../components/SEOHead.astro';
 
-const title = 'AI Token & Cost Calculator — Free LLM API Estimator | AITokenCalculator';
+const title = 'AI Token & Cost Calculator — Free LLM API Estimator';
 const description =
-  'Free AI token calculator for GPT-4o, Claude, Gemini, Mistral, Llama, Grok and DeepSeek. Count tokens from text, images, audio or chat and estimate API cost per model instantly — caching and batch discounts included.';
+  'Free AI token calculator for GPT-4o, Claude, Gemini & DeepSeek. Estimate tokens from text, images, audio and chat with instant model pricing and discounts.';
 
 const faqs = [
   {
@@ -157,25 +157,25 @@ const jsonLd = [
       <div class="marquee" aria-hidden="true">
         <div class="marquee-track">
           <!-- set A -->
-          <div class="logo-tile"><img src="/assets/icons/openai.svg" alt="" /><div><div class="lt-name">OpenAI</div><div class="lt-count">14 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/anthropic.svg" alt="" /><div><div class="lt-name">Anthropic</div><div class="lt-count">9 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/google.svg" alt="" /><div><div class="lt-name">Google</div><div class="lt-count">9 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/mistral.svg" alt="" /><div><div class="lt-name">Mistral</div><div class="lt-count">5 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/meta.svg" alt="" /><div><div class="lt-name">Meta / Llama</div><div class="lt-count">3 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/grok.svg" alt="" /><div><div class="lt-name">xAI / Grok</div><div class="lt-count">3 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/minimax.svg" alt="" /><div><div class="lt-name">MiniMax</div><div class="lt-count">3 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/kimi.svg" alt="" /><div><div class="lt-name">Moonshot / Kimi</div><div class="lt-count">3 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/deepseek.svg" alt="" /><div><div class="lt-name">DeepSeek</div><div class="lt-count">2 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/openai.svg" alt="OpenAI logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">OpenAI</div><div class="lt-count">14 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/anthropic.svg" alt="Anthropic logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Anthropic</div><div class="lt-count">9 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/google.svg" alt="Google logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Google</div><div class="lt-count">9 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/mistral.svg" alt="Mistral logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Mistral</div><div class="lt-count">5 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/meta.svg" alt="Meta logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Meta / Llama</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/grok.svg" alt="xAI Grok logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">xAI / Grok</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/minimax.svg" alt="MiniMax logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">MiniMax</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/kimi.svg" alt="Moonshot Kimi logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Moonshot / Kimi</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/deepseek.svg" alt="DeepSeek logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">DeepSeek</div><div class="lt-count">2 models</div></div></div>
           <!-- set B (seamless loop) -->
-          <div class="logo-tile"><img src="/assets/icons/openai.svg" alt="" /><div><div class="lt-name">OpenAI</div><div class="lt-count">14 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/anthropic.svg" alt="" /><div><div class="lt-name">Anthropic</div><div class="lt-count">9 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/google.svg" alt="" /><div><div class="lt-name">Google</div><div class="lt-count">9 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/mistral.svg" alt="" /><div><div class="lt-name">Mistral</div><div class="lt-count">5 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/meta.svg" alt="" /><div><div class="lt-name">Meta / Llama</div><div class="lt-count">3 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/grok.svg" alt="" /><div><div class="lt-name">xAI / Grok</div><div class="lt-count">3 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/minimax.svg" alt="" /><div><div class="lt-name">MiniMax</div><div class="lt-count">3 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/kimi.svg" alt="" /><div><div class="lt-name">Moonshot / Kimi</div><div class="lt-count">3 models</div></div></div>
-          <div class="logo-tile"><img src="/assets/icons/deepseek.svg" alt="" /><div><div class="lt-name">DeepSeek</div><div class="lt-count">2 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/openai.svg" alt="OpenAI logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">OpenAI</div><div class="lt-count">14 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/anthropic.svg" alt="Anthropic logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Anthropic</div><div class="lt-count">9 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/google.svg" alt="Google logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Google</div><div class="lt-count">9 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/mistral.svg" alt="Mistral logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Mistral</div><div class="lt-count">5 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/meta.svg" alt="Meta logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Meta / Llama</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/grok.svg" alt="xAI Grok logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">xAI / Grok</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/minimax.svg" alt="MiniMax logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">MiniMax</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/kimi.svg" alt="Moonshot Kimi logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">Moonshot / Kimi</div><div class="lt-count">3 models</div></div></div>
+          <div class="logo-tile"><img src="/assets/icons/deepseek.svg" alt="DeepSeek logo" width="32" height="32" loading="lazy" /><div><div class="lt-name">DeepSeek</div><div class="lt-count">2 models</div></div></div>
         </div>
       </div>
 

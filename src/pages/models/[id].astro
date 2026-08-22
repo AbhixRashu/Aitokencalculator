@@ -15,8 +15,8 @@ const { model: m } = Astro.props;
 const P = PROVIDERS[m.provider];
 const name = m.name;
 
-const title = `${name} Pricing & Token Cost Calculator (${m.contextWindow >= 1000 ? Math.round(m.contextWindow / 1000) + 'K context' : m.contextWindow})`;
-const description = `${name} API pricing: $${m.in}/M input, $${m.out}/M output tokens${m.cacheRead != null ? `, cached input $${m.cacheRead}/M` : ''}. Context window ${m.contextWindow.toLocaleString('en-US')} tokens. Estimate your ${name} costs free.`;
+const title = `${name} Pricing & API Token Cost Calculator`;
+const description = `${name} API pricing: $${m.in}/M input, $${m.out}/M output. Context: ${fmtCtx(m.contextWindow)} tokens. Estimate your ${name} API costs and token usage free.`;
 
 /* == numbers == */
 const fmtP = (v) => (v == null ? '—' : `$${Number(v) % 1 === 0 ? Number(v) : Number(v).toFixed(2)}`);
@@ -108,7 +108,7 @@ const jsonLd = [{
 >
   <section class="model-hero" aria-label={`${name} key facts`}>
     <div class="mh-card">
-      <img class="duel-logo" src={P.icon} alt="" width="44" height="44" />
+      <img class="duel-logo" src={P.icon} alt={`${P.name} logo`} width="44" height="44" />
       <div>
         <div class="duel-name">{name}</div>
         <div class="duel-provider">{P.name} · <a class="mono-link" href={P.url} target="_blank" rel="noopener">official pricing ↗</a></div>
@@ -143,7 +143,7 @@ const jsonLd = [{
     <p>
       Estimates assume medium reasoning effort, no batch discounts and no prompt caching. Turn on
       <a href="/guides/prompt-caching/">prompt caching</a> and the input side typically drops 50–90% —
-      run your own mix in the <a href={`/?m=${m.id}&tab=manual&in=10000&out=2000`}>free calculator preloaded with {name}</a>.
+      run your own mix in the <a href={`/?m=${m.id}&tab=manual&in=10000&out=2000`} rel="nofollow">free calculator preloaded with {name}</a>.
     </p>
 
     {relVs.length > 0 && (

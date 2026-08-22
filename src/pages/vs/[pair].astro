@@ -20,8 +20,8 @@ const meta = COMPARISONS.find((c) => c.a === a && c.b === b);
 const nameA = A.name;
 const nameB = B.name;
 
-const title = `${nameA} vs ${nameB} — Pricing & Cost Comparison (2026)`;
-const description = `${nameA} vs ${nameB}: input/output price per million tokens, cache rates, context windows and real workload cost scenarios. See which model is cheaper for your exact usage.`;
+const title = `${nameA} vs ${nameB}: API Cost & Pricing Comparison`;
+const description = `${nameA} vs ${nameB}: compare API pricing per million tokens, cache rates and context windows. See which model is cheaper for your workload.`;
 
 /* == head-to-head numbers == */
 const fmtP = (v) => (v == null ? '—' : `$${Number(v) % 1 === 0 ? Number(v) : Number(v).toFixed(2)}`);
@@ -132,7 +132,7 @@ const jsonLd = [{
   <section class="duel" aria-label="Head-to-head summary">
     <div class:list={['duel-card', { 'duel-win': stdCheaper === 'a' }]}>
       <span class="duel-win-tag" style={`display:${stdCheaper === 'a' ? '' : 'none'}`}>Cheaper overall</span>
-      <img class="duel-logo" src={PROVIDERS[A.provider].icon} alt="" width="44" height="44" />
+      <img class="duel-logo" src={PROVIDERS[A.provider].icon} alt={`${nameA} logo`} width="44" height="44" />
       <div class="duel-name">{nameA}</div>
       <div class="duel-provider">{PROVIDERS[A.provider].name}</div>
       <dl class="duel-stats">
@@ -147,7 +147,7 @@ const jsonLd = [{
 
     <div class:list={['duel-card', { 'duel-win': stdCheaper === 'b' }]}>
       <span class="duel-win-tag" style={`display:${stdCheaper === 'b' ? '' : 'none'}`}>Cheaper overall</span>
-      <img class="duel-logo" src={PROVIDERS[B.provider].icon} alt="" width="44" height="44" />
+      <img class="duel-logo" src={PROVIDERS[B.provider].icon} alt={`${nameB} logo`} width="44" height="44" />
       <div class="duel-name">{nameB}</div>
       <div class="duel-provider">{PROVIDERS[B.provider].name}</div>
       <dl class="duel-stats">
@@ -174,13 +174,13 @@ const jsonLd = [{
     </div>
     <div class="live-cards">
       <div class="live-card" id="lc-a">
-        <div class="lc-head"><img src={PROVIDERS[A.provider].icon} alt="" width="18" height="18" />{nameA}<span class="live-badge" hidden>Cheaper</span></div>
+        <div class="lc-head"><img src={PROVIDERS[A.provider].icon} alt={`${nameA} icon`} width="18" height="18" />{nameA}<span class="live-badge" hidden>Cheaper</span></div>
         <div class="lc-call" id="lca-call">—</div>
         <div class="lc-month"><span id="lca-mo">—</span><small>/month</small></div>
       </div>
       <div class="live-divider" aria-hidden="true"></div>
       <div class="live-card" id="lc-b">
-        <div class="lc-head"><img src={PROVIDERS[B.provider].icon} alt="" width="18" height="18" />{nameB}<span class="live-badge" hidden>Cheaper</span></div>
+        <div class="lc-head"><img src={PROVIDERS[B.provider].icon} alt={`${nameB} icon`} width="18" height="18" />{nameB}<span class="live-badge" hidden>Cheaper</span></div>
         <div class="lc-call" id="lcb-call">—</div>
         <div class="lc-month"><span id="lcb-mo">—</span><small>/month</small></div>
       </div>
@@ -214,8 +214,8 @@ const jsonLd = [{
         <thead>
           <tr>
             <th scope="col">Feature</th>
-            <th scope="col"><img class="th-logo" src={PROVIDERS[A.provider].icon} alt="" width="14" height="14" /> {nameA}</th>
-            <th scope="col"><img class="th-logo" src={PROVIDERS[B.provider].icon} alt="" width="14" height="14" /> {nameB}</th>
+            <th scope="col"><img class="th-logo" src={PROVIDERS[A.provider].icon} alt={`${nameA} icon`} width="14" height="14" /> {nameA}</th>
+            <th scope="col"><img class="th-logo" src={PROVIDERS[B.provider].icon} alt={`${nameB} icon`} width="14" height="14" /> {nameB}</th>
           </tr>
         </thead>
         <tbody>
@@ -284,8 +284,8 @@ const jsonLd = [{
     <p>
       Numbers shift as providers reprice — check the full
       <a href="/models/">AI model pricing table</a>, then run your own prompt through the
-      <a href={`/?m=${a}&tab=manual&in=10000&out=2000`}>calculator preloaded with {nameA}</a> or
-      <a href={`/?m=${b}&tab=manual&in=10000&out=2000`}>with {nameB}</a>.
+      <a href={`/?m=${a}&tab=manual&in=10000&out=2000`} rel="nofollow">calculator preloaded with {nameA}</a> or
+      <a href={`/?m=${b}&tab=manual&in=10000&out=2000`} rel="nofollow">with {nameB}</a>.
     </p>
   </article>
 

@@ -406,7 +406,7 @@ function renderResult() {
       const cards = results.map(r => `
         <div class="cc ${r.result.total === best ? 'best' : ''}">
           ${r.result.total === best ? '<span class="cc-badge">Cheapest</span>' : ''}
-          <div class="cc-name"><img class="cc-logo" src="${getProvider(r.model.provider).icon}" alt="" loading="lazy" />${r.model.name}</div>
+          <div class="cc-name"><img class="cc-logo" src="${getProvider(r.model.provider).icon}" alt="${r.model.name} logo" loading="lazy" />${r.model.name}</div>
           <div class="cc-cost">${fmt(r.result.total)}</div>
           <div class="cc-meta">${r.result.tokens.input.toLocaleString()} in · ${r.result.tokens.effectiveOutput.toLocaleString()} out</div>
         </div>`).join('');
@@ -436,7 +436,7 @@ function renderResult() {
       const rowsHtml = rows.map((r, i) => `
         <div class="rank-row ${i < 3 ? 'rank-top' : ''}">
           <span class="rank-no">${medal[i] || (i + 1)}</span>
-          <img class="cc-logo" src="${getProvider(r.model.provider).icon}" alt="" loading="lazy" />
+          <img class="cc-logo" src="${getProvider(r.model.provider).icon}" alt="${r.model.name} logo" loading="lazy" />
           <span class="rank-name">${r.model.name}</span>
           <span class="rank-meta mono">$${r.model.in} / $${r.model.out}·M</span>
           <span class="rank-cost">${fmt(r.result.total)}</span>

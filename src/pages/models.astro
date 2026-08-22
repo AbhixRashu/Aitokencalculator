@@ -15,9 +15,9 @@ const comparisons = COMPARISONS.map(({ a, b, note }) => {
   };
 });
 
-const title = 'AI Model Pricing (2026) — Compare LLM API Costs per Million Tokens';
+const title = 'AI Model Pricing 2026 — Compare LLM API Costs per Token';
 const description =
-  'Live-updated pricing for 51 AI models: GPT-4o, o3, Claude Opus & Sonnet, Gemini 2.5, Mistral, Llama, Grok, DeepSeek and Kimi. Input/output cost per million tokens, context windows, cache pricing and batch discounts — all in one table.';
+  'Compare live API pricing for 51 AI models including GPT-4o, Claude, Gemini and DeepSeek. Input/output costs per million tokens, caching and batch discounts.';
 
 const UPDATED = 'August 20, 2026';
 
@@ -118,7 +118,7 @@ const jsonLd = [
     {providerOrder.map((pKey) => (
       <section class="provider-section" aria-labelledby={`prov-${pKey}`}>
         <div class="provider-head">
-          <img src={PROVIDERS[pKey].icon} alt="" width="26" height="26" loading="lazy" />
+          <img src={PROVIDERS[pKey].icon} alt={`${PROVIDERS[pKey].name} logo`} width="26" height="26" loading="lazy" />
           <h2 id={`prov-${pKey}`}>{PROVIDERS[pKey].name} API pricing</h2>
           <span class="p-count">{byProvider[pKey].length} models</span>
         </div>

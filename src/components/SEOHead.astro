@@ -57,8 +57,11 @@ const allLd = [...defaultLd, ...jsonLd];
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
-<meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1"} />
+<meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
+<meta name="googlebot" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
+<meta name="bingbot" content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
 <meta name="author" content={SITE_NAME} />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta name="theme-color" content="#171717" />
 
 <!-- Open Graph -->
@@ -80,10 +83,11 @@ const allLd = [...defaultLd, ...jsonLd];
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={`${SITE_NAME} — AI token & cost calculator`} />
 
-<link rel="alternate" type="application/rss+xml" title="AITokenCalculator — Guides & Comparisons" href={new URL("/rss.xml", site).href}
+<link rel="alternate" type="application/rss+xml" title="AITokenCalculator — Guides & Comparisons" href={new URL("/rss.xml", site).href} />
 
-<!-- Icons -->
+<!-- Icons & Sitemap -->
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 

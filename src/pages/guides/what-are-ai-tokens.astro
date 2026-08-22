@@ -3,9 +3,9 @@ import '../../styles/style.css';
 import '../../styles/content.css';
 import SEOHead from '../../components/SEOHead.astro';
 
-const title = 'What Are AI Tokens? Token Counting Explained (With Calculator)';
+const title = 'What Are AI Tokens? Token Counting & Cost Explained';
 const description =
-  'Tokens are the units AI models read and bill by. Learn what a token is, how tokens convert to words and characters, why token counts affect cost and context limits, and how to estimate tokens for any prompt — free tool included.';
+  'Learn what AI tokens are, how they convert to words and characters, why they affect API costs, and how to estimate tokens for any prompt with free tools.';
 
 const published = '2026-08-21T00:00:00Z';
 
@@ -49,7 +49,7 @@ const jsonLd = [
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'AITokenCalculator', item: new URL('/', Astro.site).href },
-      { '@type': 'ListItem', position: 2, name: 'Guides' },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: new URL('/guides/', Astro.site).href },
       { '@type': 'ListItem', position: 3, name: 'What Are AI Tokens?' }
     ]
   },
@@ -70,15 +70,12 @@ const jsonLd = [
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <SEOHead title={title} description={description} path="/guides/what-are-ai-tokens/" type="article" jsonLd={jsonLd} publishedTime={published} modifiedTime={published} />
 </head>
 <body>
   <div class="page-wrap">
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/">AITokenCalculator</a><span>/</span><a href="/models/">Guides</a><span>/</span><span>What are AI tokens?</span>
+      <a href="/">AITokenCalculator</a><span>/</span><a href="/guides/">Guides</a><span>/</span><span>What are AI tokens?</span>
     </nav>
 
     <header class="page-head">
