@@ -1,7 +1,7 @@
 /* ============================================================
  * models.js — Model registry with pricing data
  * All prices are USD per million tokens unless noted otherwise.
- * Last updated: 2026-08-20. Prices change frequently — verify
+ * Last updated: 2026-09-07. Prices change frequently — verify
  * against each provider's official pricing page before relying
  * on output for financial decisions.
  * ============================================================ */
@@ -54,7 +54,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Flagship multimodal model. Cached input is 50% of base input price.'
   },
   'gpt-4o-mini': {
@@ -67,7 +67,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Cheapest OpenAI multimodal option.'
   },
   'gpt-4-turbo': {
@@ -80,7 +80,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'tiles',
     tokenizer: 'cl100k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Legacy flagship. Prefer GPT-4o for new work.'
   },
   'gpt-3.5-turbo': {
@@ -93,7 +93,7 @@ export const MODELS = {
     vision: false, audio: false,
     imageTokenMode: null,
     tokenizer: 'cl100k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Deprecated model. Still available for legacy workloads.'
   },
   'o1': {
@@ -106,7 +106,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Reasoning model — hidden chain-of-thought tokens are charged as output.'
   },
   'o1-mini': {
@@ -132,7 +132,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Latest general reasoning model. Pricing set at launch levels.'
   },
   'o3-mini': {
@@ -145,7 +145,7 @@ export const MODELS = {
     vision: false, audio: false,
     imageTokenMode: null,
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Lightweight reasoning at budget price points.'
   },
   'gpt-4-1': {
@@ -158,7 +158,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Current production recommendation. 1M context, 50% batch, cached input up to 90% off.'
   },
   'gpt-4-1-mini': {
@@ -171,7 +171,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Cheap 1M-context workhorse. Replaces GPT-4o mini for new builds.'
   },
   'gpt-5-5': {
@@ -185,12 +185,12 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Current frontier. Above 200K input the long-context meter applies; cache reads at $0.50/M.'
   },
   'gpt-5-6-sol': {
     id: 'gpt-5-6-sol', name: 'GPT-5.6 Sol', provider: 'openai',
-    in: 2.5, out: 15,
+    in: 2, out: 10,
     contextWindow: 1050000, contextThreshold: 200000,
     inHigh: 10.00, outHigh: 45.00,
     batchSupported: true, batchDiscount: 0.5,
@@ -199,7 +199,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'GPT-5.6 flagship tier (GA July 2026). 1.05M context; long-context rate above 200K.'
   },
   'gpt-5-6-terra': {
@@ -213,7 +213,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'GPT-5.6 mid tier. Long-context doubles above 200K input.'
   },
   'gpt-5-6-luna': {
@@ -227,7 +227,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'GPT-5.6 budget tier. Long-context doubles above 200K input.'
   },
 
@@ -294,7 +294,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'anthropic',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Current flagship. 1M context, 5x input for cache writes, 0.1x for cache reads.'
   },
   'claude-haiku-4-5': {
@@ -307,7 +307,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'anthropic',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Low-cost current tier with vision support. 200K context.'
   },
   'claude-sonnet-5': {
@@ -320,7 +320,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'anthropic',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Current Sonnet tier. 1M context; cache reads at 0.1x base input.'
   },
   'claude-opus-5': {
@@ -333,7 +333,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'anthropic',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Flagship. 1M context, thinking-on-by-default; cache reads at $0.50/M.'
   },
   'claude-fable-5': {
@@ -346,7 +346,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'anthropic',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Anthropic frontier tier. 1M context; cache reads at $1.00/M.'
   },
 
@@ -417,7 +417,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'flat',
     tokenizer: 'gemini',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Thinking-enabled flash tier. Above 200K input tokens the rate doubles.'
   },
   'gemini-3-5-flash': {
@@ -431,7 +431,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'flat',
     tokenizer: 'gemini',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Current-gen flash. Beats Gemini 3.1 Pro on coding at lower cost.'
   },
   'gemini-3-1-pro': {
@@ -445,7 +445,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'flat',
     tokenizer: 'gemini',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Premium tier — thinking tokens billed as output.'
   },
   'gemini-3-6-flash': {
@@ -459,12 +459,12 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'flat',
     tokenizer: 'gemini',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Intro price $0.75/$3.75 through Dec 31, 2026. Doubles above 200K input.'
   },
   'gemini-3-7-flash': {
     id: 'gemini-3-7-flash', name: 'Gemini 3.7 Flash', provider: 'google',
-    in: 0.375, out: 1.875,
+    in: 0.75, out: 3.75,
     contextWindow: 1048576, contextThreshold: 200000,
     inHigh: 1.50, outHigh: 7.50,
     batchSupported: true, batchDiscount: 0.5,
@@ -473,7 +473,7 @@ export const MODELS = {
     vision: true, audio: true,
     imageTokenMode: 'flat',
     tokenizer: 'gemini',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Latest Flash (Aug 2026). Intro $0.75/$3.75 through Dec 31, 2026.'
   },
 
@@ -488,7 +488,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Flagship Mistral model with vision support (large 2411+).'
   },
   'mistral-small': {
@@ -501,7 +501,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Efficient mid-tier model (3.1) with vision support.'
   },
   'mixtral-8x7b': {
@@ -527,7 +527,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Current flagship, 75% cheaper than Large 2. 256K context.'
   },
   'mistral-small-4': {
@@ -540,7 +540,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Budget mid-tier. Beats GPT-5.4 mini on price.'
   },
 
@@ -555,12 +555,12 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Extremely cheap frontier-adjacent tier. 1M context, auto cache hits ~$0.0028/M.'
   },
   'deepseek-v4-pro': {
     id: 'deepseek-v4-pro', name: 'DeepSeek V4 Pro', provider: 'deepseek',
-    in: 1.188, out: 3.564,
+    in: 1.0494, out: 3.1482,
     contextWindow: 1048576, contextThreshold: null,
     batchSupported: true, batchDiscount: 0.5,
     cacheWrite: null, cacheRead: 0.003625,
@@ -568,7 +568,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Flagship reasoning tier. 1M context, 384K max output.'
   },
 
@@ -596,7 +596,7 @@ export const MODELS = {
     vision: false, audio: false,
     imageTokenMode: null,
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Hosted via Groq / Together / other providers.'
   },
   'llama-3-1-8b': {
@@ -609,7 +609,7 @@ export const MODELS = {
     vision: false, audio: false,
     imageTokenMode: null,
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Fastest cheap open-weight option.'
   },
 
@@ -625,7 +625,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Flagship Grok. Rates double above 200K input tokens; cached reads at $0.50/M.'
   },
   'grok-4-3': {
@@ -639,7 +639,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'High-context tier. 1M context, cached reads at $0.20/M.'
   },
   'grok-build': {
@@ -653,7 +653,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'tiles',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Budget agentic tier for building tools and coding.'
   },
 
@@ -668,7 +668,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Current flagship. Up to 512K input tokens; cached reads at $0.06/M.'
   },
   'minimax-m2-7': {
@@ -681,7 +681,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Cost-efficient agentic model, 204.8K context.'
   },
   'minimax-m2': {
@@ -694,7 +694,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'llama',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Legacy flagship, still widely hosted.'
   },
 
@@ -709,12 +709,12 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Moonshot flagship reasoning model with 1M context.'
   },
   'kimi-k2-6': {
     id: 'kimi-k2-6', name: 'Kimi K2.6', provider: 'moonshot',
-    in: 0.5605, out: 2.36,
+    in: 0.95, out: 4,
     contextWindow: 262144, contextThreshold: null,
     batchSupported: false, batchDiscount: 1,
     cacheWrite: null, cacheRead: 0.19,
@@ -722,7 +722,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Agentic mid-tier. Cached reads at $0.19/M.'
   },
   'kimi-k2-5': {
@@ -735,7 +735,7 @@ export const MODELS = {
     vision: true, audio: false,
     imageTokenMode: 'flat',
     tokenizer: 'o200k',
-    updated: '2026-08-20',
+    updated: '2026-09-07',
     note: 'Cheapest modern Kimi option, 256K context.'
   }
 };
